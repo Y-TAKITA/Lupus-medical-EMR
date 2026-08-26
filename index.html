@@ -3509,31 +3509,44 @@ function checkAndSendApprovalNotifications(ss) {
 
       return new Promise((resolve) => {
         try {
-          // Single Clean Transmission Engine (Eliminates Duplicate Rows)
-          const callbackName = 'gas_cb_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
-          const script = document.createElement('script');
-          const payloadEnc = encodeURIComponent(payloadJson);
-          const sep = gasUrl.includes('?') ? '&' : '?';
+          // Hidden Iframe for Form POST Target (Bypasses URL length limits & cross-device blocks)
+          let iframe = document.getElementById('gas_hidden_iframe');
+          if (!iframe) {
+            iframe = document.createElement('iframe');
+            iframe.id = 'gas_hidden_iframe';
+            iframe.name = 'gas_hidden_iframe';
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
+          }
 
-          window[callbackName] = function() {
-            try { delete window[callbackName]; } catch(e) {}
-            try { script.remove(); } catch(e) {}
-            resolve(true);
-          };
+          // Single Clean Form POST Transmission with all individual fields
+          const form = document.createElement('form');
+          form.style.display = 'none';
+          form.method = 'POST';
+          form.action = gasUrl;
+          form.target = 'gas_hidden_iframe';
 
-          script.onerror = function() {
-            try { script.remove(); } catch(e) {}
-            resolve(false);
-          };
+          const inputPayload = document.createElement('input');
+          inputPayload.type = 'hidden';
+          inputPayload.name = 'payload';
+          inputPayload.value = payloadJson;
+          form.appendChild(inputPayload);
 
-          script.src = `${gasUrl}${sep}action=saveKarte&payload=${payloadEnc}&callback=${callbackName}&t=${Date.now()}`;
-          document.head.appendChild(script);
+          Object.keys(payload).forEach(key => {
+            const inp = document.createElement('input');
+            inp.type = 'hidden';
+            inp.name = key;
+            inp.value = payload[key] || '';
+            form.appendChild(inp);
+          });
+
+          document.body.appendChild(form);
+          form.submit();
 
           setTimeout(() => {
-            try { delete window[callbackName]; } catch(e) {}
-            try { script.remove(); } catch(e) {}
+            try { form.remove(); } catch(e) {}
             resolve(true);
-          }, 3500);
+          }, 2000);
 
         } catch(err) {
           console.warn("Google Sheets Auto Push Error:", err);
