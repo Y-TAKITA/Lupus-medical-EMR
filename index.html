@@ -1850,6 +1850,45 @@ function autoSortPlayerSheet(sheet) {
   });
 
   range.setValues(values);
+}
+
+// 🌟 アクセス承認自動チェック ＆ 1回限定承認メール送信関数
+function checkAndSendApprovalNotifications(ss) {
+  try {
+    var sheet = ss.getSheetByName("アクセス申請一覧");
+    if (!sheet) return;
+
+    var lastRow = sheet.getLastRow();
+    if (lastRow < 2) return;
+
+    for (var i = 2; i <= lastRow; i++) {
+      var name = sheet.getRange(i, 2).getValue().toString().trim();
+      var email = sheet.getRange(i, 3).getValue().toString().trim().toLowerCase();
+      var role = sheet.getRange(i, 5).getValue().toString().trim() || sheet.getRange(i, 4).getValue().toString().trim() || "Editor";
+      var status = sheet.getRange(i, 6).getValue().toString().trim().toLowerCase();
+      var notified = sheet.getRange(i, 7).getValue().toString().trim().toLowerCase();
+
+      if (email && (status === "approved" || status === "承認" || status === "合流") && notified !== "yes") {
+        var roleTitle = (role.toLowerCase().includes("admin") || role.includes("管理者")) ? "Admin（最高管理者）" : "Editor（カルテ入力専用）";
+        
+        var subject = "✅ 【東芝ブレイブルーパス東京】アクセス承認完了のお知らせ (" + roleTitle + ")";
+        var body = name + " 様\n\n" +
+          "東芝ブレイブルーパス東京 メディカルカルテ管理システムへのアクセス申請が承認されました。\n\n" +
+          "■ 付与権限: " + roleTitle + "\n" +
+          "■ 登録メールアドレス: " + email + "\n\n" +
+          "カルテWebアプリを開き、上記メールアドレスを入力してサインインしていただくことで、即座にご利用いただけます。\n\n" +
+          "----------------------------------------\n" +
+          "東芝ブレイブルーパス東京 メディカルチーム\n" +
+          "----------------------------------------";
+
+        try {
+          MailApp.sendEmail(email, subject, body);
+        } catch(eMail) {}
+
+        sheet.getRange(i, 7).setValue("yes");
+      }
+    }
+  } catch(err) {}
 }</textarea>
         </div>
       </div>
@@ -2618,13 +2657,16 @@ function autoSortPlayerSheet(sheet) {
             switchView('home-portal');
           }
           return;
+        } else {
+          // Address exists in spreadsheet but status is not approved yet (e.g. pending)
+          alert(`📩 【承認待ち】\n\nご指定のメールアドレス（ ${email} ）は現在スプレッドシートのアクセス申請一覧にて承認（approved）待ちです。\n\n管理者の承認完了をお待ちください。`);
+          closePasscodeEmailModal();
+          return;
         }
       }
 
-      // If not in spreadsheet or not approved: Block access strictly
-      alert(`⛔️ 【アクセス未承認・未登録】\n\nご指定のメールアドレス（ ${email} ）はスプレッドシートのアクセス申請一覧において承認（approved）されていません。\n\n管理者の承認完了をお待ちいただくか、アクセス申請を行ってください。`);
-      closePasscodeEmailModal();
-      return;
+      // New Email Address (Not in spreadsheet yet): Send requestAccess to GAS
+      const reqRoleLower = String(reqRole || 'editor').toLowerCase();
       const sendRole = reqRoleLower.includes('admin') ? 'Admin' : 'Editor';
       const roleName = (sendRole === 'Admin') ? '👑 Admin（最高管理者）' : '📝 Editor（カルテ入力専用）';
 
@@ -2660,14 +2702,14 @@ function autoSortPlayerSheet(sheet) {
       }
 
       closePasscodeEmailModal();
-      showToastNotification(`📩 ${name} 様 (${email}) の初回アクセス申請（pending）を送信しました！`);
+      showToastNotification(`📩 ${name} 様 (${email}) のアクセス申請（pending）をスプレッドシートへ送信しました！`);
 
-      alert(`📩 【初回アクセス申請完了】\n\n` +
+      alert(`📩 【アクセス申請完了】\n\n` +
         `ご氏名: ${name} 様\n` +
         `メールアドレス: ${email}\n` +
         `希望権限: ${roleName}\n\n` +
-        `スプレッドシート「アクセス申請一覧」へ申請（status: pending）を保存いたしました。\n` +
-        `管理者の承認（approved）完了まで今しばらくお待ちください。`);
+        `スプレッドシート「アクセス申請一覧」へ申請（status: pending）を保存・通知いたしました。\n` +
+        `管理者がスプレッドシート側で「approved」へ変更すると承認通知メールが自動送信されます。`);
     }
 
     function checkAdminPermission(actionName) {
