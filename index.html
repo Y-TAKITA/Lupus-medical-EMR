@@ -2397,7 +2397,7 @@ function checkAndSendApprovalNotifications(ss) {
     };
 
     var COMMON_EVAL_TESTS = [
-      '圧痛(±)', 'ROM制限(±)', '腫脹(±)', '熱感(±)', '皮下出血(±)', 'MMT(5/5)', '歩行時痛(±)', '荷重時痛(±)'
+      '圧痛(+)', 'ROM制限(+)', '腫脹(+)', '熱感(+)', '皮下出血(+)', 'MMT(5/5)', '歩行時痛(+)', '荷重時痛(+)'
     ];
 
     function normalizeStatus(rawStr) {
@@ -3151,7 +3151,7 @@ function checkAndSendApprovalNotifications(ss) {
 
     function getCommonEvalTestsForParts(allSelectedParts) {
       const defaultCommon = [
-        '圧痛(±)', 'ROM制限(±)', '腫脹(±)', '熱感(±)', '皮下出血(±)', 'MMT(5/5)', '歩行時痛(±)', '荷重時痛(±)'
+        '圧痛(+)', 'ROM制限(+)', '腫脹(+)', '熱感(+)', '皮下出血(+)', 'MMT(5/5)', '歩行時痛(+)', '荷重時痛(+)'
       ];
 
       if (!allSelectedParts || allSelectedParts.length === 0) {
