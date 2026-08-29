@@ -4366,15 +4366,13 @@ function checkAndSendApprovalNotifications(ss) {
               const d2 = normStr(localRec.date);
               const n1 = normStr(pLog.playerName);
               const n2 = normStr(localRec.playerName);
+              const st1 = normStr(pLog.staffName);
+              const st2 = normStr(localRec.staffName);
               const t1 = normStr(pLog.treatmentType);
               const t2 = normStr(localRec.treatmentType);
-              const pt1 = normStr(pLog.primaryInjuredPart || pLog.injuredPart);
-              const pt2 = normStr(localRec.primaryInjuredPart || localRec.injuredPart);
-              const s1 = normStr(pLog.soapS);
-              const s2 = normStr(localRec.soapS);
 
-              const pSig = `${d1}|${n1}|${t1}|${pt1}|${s1}`;
-              const lSig = `${d2}|${n2}|${t2}|${pt2}|${s2}`;
+              const pSig = `${d1}|${n1}|${st1}|${t1}`;
+              const lSig = `${d2}|${n2}|${st2}|${t2}`;
 
               return pSig === lSig;
             });
