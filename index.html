@@ -997,34 +997,35 @@
     <!-- Main Content Area -->
     <div class="main-wrapper">
       <!-- Top Header Bar -->
-      <header class="top-header">
-        <div class="header-left">
+      <header class="top-header" style="height: 56px; padding: 0 1.25rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; overflow-x: auto;">
+        <div class="header-left" style="display: flex; align-items: center; flex-wrap: nowrap; white-space: nowrap;">
           <button class="mobile-toggle-btn"><i class="fa-solid fa-bars"></i></button>
-          <div class="page-breadcrumb">
+          <div class="page-breadcrumb" style="display: flex; align-items: center; flex-wrap: nowrap; white-space: nowrap;">
             <span class="breadcrumb-item" id="currentViewCategory">メイン</span>
             <i class="fa-solid fa-chevron-right breadcrumb-separator"></i>
             <span class="breadcrumb-item active" id="currentViewTitle">🏠 チームホーム</span>
+            <span style="background: rgba(96,165,250,0.18); color: #60a5fa; border: 1px solid rgba(96,165,250,0.35); padding: 0.1rem 0.45rem; border-radius: 10px; font-size: 0.68rem; font-weight: 800; margin-left: 0.4rem; white-space: nowrap;">ver3.6</span>
           </div>
         </div>
 
-        <div class="header-right" style="display: flex; align-items: center; gap: 0.4rem;">
-          <button class="btn-secondary sync-btn header-tool-btn" onclick="syncGoogleSheetsData()" style="background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.4); color: #34d399;" title="クリックしてGoogleスプレッドシートの最新データを同期">
-            <i class="fa-solid fa-arrows-rotate" style="font-size: 0.65rem;"></i>
+        <div class="header-right" style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: nowrap; white-space: nowrap;">
+          <button class="btn-secondary sync-btn header-tool-btn" onclick="syncGoogleSheetsData()" style="background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.4); color: #34d399; font-size: 0.72rem; padding: 0.2rem 0.5rem; white-space: nowrap;" title="クリックしてGoogleスプレッドシートの最新データを同期">
+            <i class="fa-solid fa-arrows-rotate" style="font-size: 0.6rem;"></i>
             <span>シート同期</span>
           </button>
-          <button class="btn-secondary header-tool-btn" onclick="syncUnsyncedLocalRecordsToGoogleSheets()" style="background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.4); color: #60a5fa;" title="未送信のカルテログをGoogleスプレッドシートへ再送信">
-            <i class="fa-solid fa-paper-plane" style="font-size: 0.65rem;"></i>
+          <button class="btn-secondary header-tool-btn" onclick="syncUnsyncedLocalRecordsToGoogleSheets()" style="background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.4); color: #60a5fa; font-size: 0.72rem; padding: 0.2rem 0.5rem; white-space: nowrap;" title="未送信のカルテログをGoogleスプレッドシートへ再送信">
+            <i class="fa-solid fa-paper-plane" style="font-size: 0.6rem;"></i>
             <span>未送信再送</span>
           </button>
-          <div class="header-status-badge">
-            <span class="status-dot online"></span>
+          <div class="header-status-badge" style="display: inline-flex; align-items: center; gap: 0.3rem; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25); padding: 0.15rem 0.45rem; border-radius: 10px; font-size: 0.68rem; font-weight: 700; color: #34d399; white-space: nowrap;">
+            <span class="status-dot online" style="width: 5px; height: 5px; background: #34d399; border-radius: 50%; display: inline-block;"></span>
             <span>スプレッドシート同期中</span>
           </div>
-          <div class="header-user">
-            <div class="user-avatar"><i class="fa-solid fa-user-shield"></i></div>
+          <div class="header-user" style="display: flex; align-items: center; gap: 0.35rem; white-space: nowrap;">
+            <div class="user-avatar" style="width: 26px; height: 26px; font-size: 0.75rem;"><i class="fa-solid fa-user-shield"></i></div>
             <div class="user-info">
-              <span class="user-name">東芝メディカルチーム</span>
-              <span class="user-role" id="headerActiveUserEmail">未サインイン (Viewer)</span>
+              <span class="user-name" style="font-size: 0.75rem;">東芝メディカルチーム</span>
+              <span class="user-role" id="headerActiveUserEmail" style="font-size: 0.65rem;">未サインイン (Viewer)</span>
             </div>
           </div>
         </div>
@@ -1117,13 +1118,14 @@
         <section id="view-new-record" class="view-panel">
           <div class="karte-split-container" style="display: grid; grid-template-columns: 1fr 480px; gap: 0.75rem; align-items: start;">
 <!-- LEFT PANEL: New Medical Karte Input Form -->
-            <div class="card" style="max-height: calc(100vh - 100px); overflow-y: auto; padding: 1.1rem;">
-              <div class="card-header" style="margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">
-                <div class="card-title">
+            <div class="card" id="mainKarteFormCard" style="padding: 1.25rem; transition: var(--transition);">
+              <div class="card-header" style="margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;">
+                <div class="card-title" style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
                   <i class="fa-solid fa-pen-to-square"></i>
                   <span id="formCardTitle">新規メディカルカルテ記録</span>
+                  <span id="editModeBanner" style="display: none; background: rgba(37,99,235,0.25); color: #60a5fa; border: 1px solid #3b82f6; padding: 0.2rem 0.65rem; border-radius: 12px; font-size: 0.76rem; font-weight: 800;">✏️ 編集モード中</span>
                 </div>
-                <span style="font-size: 0.8rem; color: var(--text-muted);">スプレッドシートのマスタと同期中</span>
+                <button type="button" id="editCancelBtn" onclick="cancelEditMode()" style="display: none; background: rgba(239,68,68,0.2); border: 1px solid #ef4444; color: #f87171; padding: 0.25rem 0.65rem; border-radius: 6px; font-size: 0.76rem; font-weight: 800; cursor: pointer; white-space: nowrap;">編集解除</button>
               </div>
 
               <form id="karteForm" onsubmit="handleKarteSubmit(event)">
@@ -1293,12 +1295,12 @@
 
                   <div class="form-group">
                     <label class="form-label" style="font-size: 0.88rem; color: #f59e0b;"><i class="fa-solid fa-align-left"></i> Assessment ・Action(A: 評価・診断・考察・今回の施術)</label>
-                    <textarea id="formSoapA" class="form-textarea" style="min-height: 85px;" placeholder="病態診断・問題点の抽出・評価考察など..."></textarea>
+                    <textarea id="formSoapA" class="form-textarea" style="min-height: 85px;" placeholder="病態診断・病態評価・問題点の抽出・評価考察，施術内容など"></textarea>
                   </div>
 
                   <div class="form-group">
                     <label class="form-label" style="font-size: 0.88rem; color: #a855f7;"><i class="fa-solid fa-align-left"></i> Plan (P: 治療計画・今後方針)</label>
-                    <textarea id="formSoapP" class="form-textarea" style="min-height: 85px;" placeholder="実施したストレッチ・エクササイズ、次回方針など..."></textarea>
+                    <textarea id="formSoapP" class="form-textarea" style="min-height: 85px;" placeholder="今後，次回の方針など"></textarea>
                   </div>
                 </div>
 
@@ -1538,6 +1540,78 @@
       <div class="modal-footer">
         <button class="btn-secondary" onclick="closeModal()">閉じる</button>
         <button class="btn-primary" id="modalEditBtn">編集する</button>
+      </div>
+    </div>
+  <!-- Direct Edit Modal -->
+  <div class="modal-backdrop" id="editKarteModal" style="z-index: 9999;">
+    <div class="modal-box" style="max-width: 760px; width: 92%;">
+      <div class="modal-header" style="background: rgba(30,41,59,0.85); padding: 1rem 1.25rem;">
+        <h3 id="editKarteModalTitle" style="color: #60a5fa; font-size: 1.1rem; font-weight: 900; display: flex; align-items: center; gap: 0.5rem; margin: 0;">
+          <i class="fa-solid fa-pen-to-square"></i> ✏️ カルテ直接編集
+        </h3>
+        <button class="modal-close-btn" onclick="closeEditKarteModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="modal-body" style="max-height: 75vh; overflow-y: auto; padding: 1.25rem; display: flex; flex-direction: column; gap: 0.85rem;">
+        <input type="hidden" id="editModalRecordId">
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+          <div>
+            <label class="form-label" style="font-size: 0.78rem; font-weight: 800; color: #94a3b8; margin-bottom: 0.25rem; display: block;">実施日付</label>
+            <input type="date" id="editModalDate" class="form-input" style="padding: 0.45rem 0.65rem; font-size: 0.88rem; background: var(--bg-base);">
+          </div>
+          <div>
+            <label class="form-label" style="font-size: 0.78rem; font-weight: 800; color: #94a3b8; margin-bottom: 0.25rem; display: block;">対象選手</label>
+            <input type="text" id="editModalPlayerName" class="form-input" style="padding: 0.45rem 0.65rem; font-size: 0.88rem; font-weight: 700; color: #60a5fa; background: rgba(30,41,59,0.6);" readonly>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem;">
+          <div>
+            <label class="form-label" style="font-size: 0.78rem; font-weight: 800; color: #94a3b8; margin-bottom: 0.25rem; display: block;">担当スタッフ</label>
+            <input type="text" id="editModalStaffName" class="form-input" style="padding: 0.45rem 0.65rem; font-size: 0.88rem; background: var(--bg-base);">
+          </div>
+          <div>
+            <label class="form-label" style="font-size: 0.78rem; font-weight: 800; color: #94a3b8; margin-bottom: 0.25rem; display: block;">施術場所</label>
+            <input type="text" id="editModalLocation" class="form-input" style="padding: 0.45rem 0.65rem; font-size: 0.88rem; background: var(--bg-base);">
+          </div>
+          <div>
+            <label class="form-label" style="font-size: 0.78rem; font-weight: 800; color: #94a3b8; margin-bottom: 0.25rem; display: block;">治療種別</label>
+            <input type="text" id="editModalType" class="form-input" style="padding: 0.45rem 0.65rem; font-size: 0.88rem; background: var(--bg-base);">
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label" style="font-size: 0.78rem; font-weight: 800; color: #38bdf8; margin-bottom: 0.25rem; display: block;">S (Subjective: 主訴)</label>
+          <textarea id="editModalSoapS" class="form-textarea" rows="2" style="padding: 0.45rem 0.65rem; font-size: 0.85rem; width: 100%; background: var(--bg-base); border-color: rgba(56,189,248,0.3);"></textarea>
+        </div>
+
+        <div>
+          <label class="form-label" style="font-size: 0.78rem; font-weight: 800; color: #34d399; margin-bottom: 0.25rem; display: block;">O (Objective: 客観的所見)</label>
+          <textarea id="editModalSoapO" class="form-textarea" rows="2" style="padding: 0.45rem 0.65rem; font-size: 0.85rem; width: 100%; background: var(--bg-base); border-color: rgba(52,211,153,0.3);"></textarea>
+        </div>
+
+        <div>
+          <label class="form-label" style="font-size: 0.78rem; font-weight: 800; color: #fbbf24; margin-bottom: 0.25rem; display: block;">A (Assessment: 評価・考察・施術)</label>
+          <textarea id="editModalSoapA" class="form-textarea" rows="2" style="padding: 0.45rem 0.65rem; font-size: 0.85rem; width: 100%; background: var(--bg-base); border-color: rgba(251,191,36,0.3);"></textarea>
+        </div>
+
+        <div>
+          <label class="form-label" style="font-size: 0.78rem; font-weight: 800; color: #a78bfa; margin-bottom: 0.25rem; display: block;">P (Plan: 治療計画)</label>
+          <textarea id="editModalSoapP" class="form-textarea" rows="2" style="padding: 0.45rem 0.65rem; font-size: 0.85rem; width: 100%; background: var(--bg-base); border-color: rgba(167,139,250,0.3);"></textarea>
+        </div>
+
+        <div>
+          <label class="form-label" style="font-size: 0.78rem; font-weight: 800; color: #94a3b8; margin-bottom: 0.25rem; display: block;">コンディショニングメモ / 備考</label>
+          <textarea id="editModalMemo" class="form-textarea" rows="2" style="padding: 0.45rem 0.65rem; font-size: 0.85rem; width: 100%; background: var(--bg-base);"></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="background: #0f172a; padding: 0.85rem 1.25rem; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color);">
+        <button class="btn-secondary" onclick="closeEditKarteModal()" style="font-size: 0.82rem; padding: 0.4rem 0.95rem;">キャンセル</button>
+        <button class="btn-primary" onclick="saveKarteFromEditModal()" style="font-size: 0.85rem; font-weight: 800; padding: 0.45rem 1.3rem; background: linear-gradient(135deg, #2563eb, #1d4ed8);">
+          <i class="fa-solid fa-floppy-disk" style="margin-right: 4px;"></i> ✅ 上書き保存する
+        </button>
       </div>
     </div>
   </div>
@@ -2334,70 +2408,70 @@ function checkAndSendApprovalNotifications(ss) {
     var treatments = [];
     try { treatments = loadTreatmentsData(); } catch(e) { treatments = Array.isArray(INITIAL_TREATMENTS) ? [...INITIAL_TREATMENTS] : []; }
 
-    var currentRoleMode = 'viewer';
-    try { safeStorage.setItem('lupus_emr_role', 'viewer'); } catch(e) {}
+    var currentRoleMode = 'editor';
+    try { safeStorage.setItem('lupus_emr_role', 'editor'); } catch(e) {}
     var currentAdminPasscode = safeStorage.getItem('lupus_emr_admin_pass') || 'Lupus-1007';
     var currentEditorPasscode = safeStorage.getItem('lupus_emr_editor_pass') || 'team-medical';
     window.accessStatusMap = window.accessStatusMap || {};
     window.accessUserMap = window.accessUserMap || {};
 
-    /* Special Tests Map per Body Part */
+    /* Special Tests Map per Body Part (Cleaned without (±) or (+)) */
     var SPECIAL_TESTS_MAP = {
       'Shoulder': [
-        'CAT(±)', 'HFT(±)', 'Apprehension Test(±)', 'Hawkins Test(±)', 'Full Can Test(±)', 'Empty Can Test(±)', 'Speed Test(±)', 'Yergason Test(±)', 'Neer Test(±)'
+        'CAT', 'HFT', 'Apprehension Test', 'Hawkins Test', 'Full Can Test', 'Empty Can Test', 'Speed Test', 'Yergason Test', 'Neer Test', 'Crank Test'
       ],
       'Knee': [
-        'McMurray Test(±)', '内反ストレステスト(±)', '外反ストレステスト(±)', 'Lachman Test(±)', 'Sagging Sign(±)', 'Patella Apprehension(±)', '膝蓋跳動(±)', 'Hoffa sign(±)'
+        'McMurray Test', '内反ストレステスト', '外反ストレステスト', 'Lachman Test', 'Sagging Sign', 'Patella Apprehension', '膝蓋跳動', 'Hoffa sign'
       ],
       'Ankle': [
-        'Ankle Anterior Drawer(±)', 'Talar Tilt Test(±)', 'Thompson Test(±)', 'Squeeze Test(±)', '足関節ROM制限(±)'
+        'Ankle Anterior Drawer', 'Talar Tilt Test', 'Thompson Test', 'Squeeze Test', '足関節ROM制限'
       ],
       'Hip / Groin': [
-        'FADROM(±)', 'FABER Test(±)', 'Squeeze Test(±)', 'Thomas Test(±)', 'Ober Test(±)', 'PM sign(±)', 'Trendelenburg sign(±)', 'Gillet test(±)', 'Stork test(±)', '股関節ROM制限(±)'
+        'FADIR', 'FABER', 'Squeeze Test', 'Thomas Test', 'Ober Test', 'PM sign', 'Trendelenburg sign', 'Gillet test', 'Stork test', '股関節ROM制限'
       ],
       'Hamstrings': [
-        'SLR Test(±)', 'Active Knee Extension(±)', 'Leg Curl時痛(±)', 'Hip Lift時痛(±)', 'ハムストリングス伸展痛(±)'
+        'SLR Test', 'Active Knee Extension', 'Leg Curl時痛', 'Hip Lift時痛', 'PM sign', 'ハムストリングス伸展痛'
       ],
       'Calf': [
-        'Single Leg Heel Raise(±)'
+        'Single Leg Heel Raise'
       ],
       'Lower Leg': [
-        'Thompson Test(±)', 'Single Leg Heel Raise(±)', '脛骨叩打痛(±)'
+        'Thompson Test', 'Single Leg Heel Raise', '脛骨叩打痛'
       ],
       'Achilles Tendon': [
-        'Thompson Test(±)', 'アキレス腱圧痛(±)', '単脚ヒールライズ痛(±)'
+        'Thompson Test', 'アキレス腱圧痛', '単脚ヒールライズ痛'
       ],
       'Neck (Cervical Spine)': [
-        'Spurling Test(±)', 'Jackson Test(±)', '軸圧痛(±)'
+        'Spurling Test', 'Jackson Test', '軸圧痛'
       ],
       'Lumbar Spine / Lower Back / Gluteal': [
-        'SLR(±)', 'Kemp Test(±)', 'FFD(cm)', '腰椎回旋痛(±)', '仙腸関節圧痛(±)', 'Ober Test(±)'
+        'SLR', 'Kemp Test', 'FFD(cm)', '腰椎回旋痛', '仙腸関節圧痛', 'Ober Test'
       ],
       'Elbow': [
-        'Cozen Test(±)', 'Golfers Elbow Test(±)', '肘関節外反ストレステスト(±)', 'Tinel Sign(±)'
+        'Cozen Test', 'Golfers Elbow Test', '肘関節外反ストレステスト', 'Tinel Sign'
       ],
       'Wrist / Hand / Fingers': [
-        'Finkelstein Test(±)', 'Phalen Test(±)', 'Tinel Sign(±)', 'TFCC Squeeze Test(±)'
+        'Finkelstein Test', 'Phalen Test', 'Tinel Sign', 'TFCC Squeeze Test'
       ],
       'Anterior / Medial Thigh': [
-        '大腿四頭筋伸展痛(±)', '大腿四頭筋抵抗下収縮痛(±)', '股関節内転抵抗痛(±)'
+        '大腿四頭筋伸展痛', '大腿四頭筋抵抗下収縮痛', '股関節内転抵抗痛'
       ],
       'Foot / Toes': [
-        '足部圧痛(±)', 'Windlass Test(±)', '足指可動域制限(±)'
+        '足部圧痛', 'Windlass Test', '足指可動域制限'
       ],
       'Full Body': [
-        '全身倦怠感(±)', '可動域制限(±)', '全般圧痛(±)'
+        '全身倦怠感', '可動域制限', '全般圧痛'
       ],
       'Upper Body': [
-        '胸郭可動性(±)', '肩甲骨可動性(±)', '上肢MMT(5/5)'
+        '胸郭可動性', '肩甲骨可動性', '上肢MMT(5/5)'
       ],
       'Lower Body': [
-        '下肢MMT(5/5)', 'スクワット動作痛(±)', 'ランジ動作痛(±)'
+        '下肢MMT(5/5)', 'スクワット動作痛', 'ランジ動作痛'
       ]
     };
 
     var COMMON_EVAL_TESTS = [
-      '圧痛(+)', 'ROM制限(+)', '腫脹(+)', '熱感(+)', '皮下出血(+)', 'MMT(5/5)', '歩行時痛(+)', '荷重時痛(+)'
+      '圧痛', 'ROM制限', '腫脹', '熱感', '皮下出血', 'MMT(5/5)', '歩行時痛', '荷重時痛'
     ];
 
     function normalizeStatus(rawStr) {
@@ -2863,8 +2937,12 @@ function checkAndSendApprovalNotifications(ss) {
         const part = (t.primaryInjuredPart || t.injuredPart || "").trim();
         const type = (t.treatmentType || "").trim();
 
+        const rawJsonEncPast = encodeURIComponent(JSON.stringify(t));
+        const pastKey = t.id || ('PAST_KEY_' + t.date);
+        if (window.logMap) window.logMap[pastKey] = t;
+
         html += `
-          <div class="treatment-log-item" style="border: 1px solid rgba(96,165,250,0.35); background: rgba(15, 23, 42, 0.95); border-radius: 8px; padding: 0.85rem; margin-bottom: 0.85rem; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+          <div class="treatment-log-item" data-key="${pastKey}" data-json="${rawJsonEncPast}" style="border: 1px solid rgba(96,165,250,0.35); background: rgba(15, 23, 42, 0.95); border-radius: 8px; padding: 0.85rem; margin-bottom: 0.85rem; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
             <div class="treatment-log-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.4rem; margin-bottom: 0.5rem;">
               <span class="treatment-log-player">
                 ${escapeHtmlStr(displayName)}
@@ -2874,9 +2952,6 @@ function checkAndSendApprovalNotifications(ss) {
                 <span style="font-weight: 800; font-size: 0.82rem; color: #60a5fa;">
                   <i class="fa-solid fa-calendar-day"></i> ${t.date} (${escapeHtmlStr(t.staffName || '-')})
                 </span>
-                <button class="btn-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.72rem;" onclick="viewRecordDetail('${t.id}')" title="全詳細を表示">
-                  <i class="fa-solid fa-eye"></i> 詳細
-                </button>
               </div>
             </div>
 
@@ -3018,7 +3093,7 @@ function checkAndSendApprovalNotifications(ss) {
     /* View Switching Logic */
     function switchView(viewId) {
       if (viewId === 'new-record' && currentRoleMode === 'viewer') {
-        alert("🔒 【Viewer（閲覧専用）】モードのため「新規記録・編集」タブはご利用いただけません。\n\nカルテの入力・編集を行うには、サイドバー赤BOXまたはチームホームより【Editor】または【Admin】へ権限を切り替えてください。");
+        alert("🔒 【Viewer（閲覧専用）モード】\n\nカルテの新規作成・編集を行うには「Editor（編集者）」または「Admin（管理者）」権限が必要です。\n画面右上の「未サインイン (Viewer)」をクリックしてサインインまたは認証を行ってください。");
         return;
       }
 
@@ -3229,6 +3304,16 @@ function checkAndSendApprovalNotifications(ss) {
           </button>`;
       });
 
+      // Append separate evaluation grade chips (++) (+) (±) (-) at the end of [O] chips area
+      const gradeChips = ['(++)', '(+)', '(±)', '(-)'];
+      html += `<div style="font-size: 0.72rem; width: 100%; margin-top: 0.4rem; margin-bottom: 0.2rem; color: #fbbf24; font-weight: 800;"><i class="fa-solid fa-plus-minus"></i> 評価度合いグレード:</div>`;
+      gradeChips.forEach(grade => {
+        html += `
+          <button type="button" class="special-test-chip grade-chip" onclick="appendToSoapO('${grade}')" style="background: rgba(245,158,11,0.22); color: #fbbf24; border: 1px solid rgba(245,158,11,0.5); border-radius: 4px; padding: 3px 10px; font-size: 0.78rem; font-weight: 800; cursor: pointer; transition: all 0.15s ease;" title="タップしてO（所見）欄に評価度合いを追記">
+            ${grade}
+          </button>`;
+      });
+
       container.innerHTML = html;
     }
 
@@ -3236,18 +3321,31 @@ function checkAndSendApprovalNotifications(ss) {
       const elem = document.getElementById('formSoapO');
       if (!elem) return;
 
-      const currentVal = elem.value.trim();
-      if (currentVal) {
-        if (currentVal.endsWith('\n') || currentVal.endsWith('、') || currentVal.endsWith('／')) {
-          elem.value = currentVal + ' ' + textToAppend;
-        } else {
-          elem.value = currentVal + '\n' + textToAppend;
+      const start = elem.selectionStart;
+      const end = elem.selectionEnd;
+      const val = elem.value;
+
+      if (typeof start === 'number' && typeof end === 'number') {
+        const before = val.substring(0, start);
+        const after = val.substring(end);
+        let prefix = "";
+        if (before.length > 0 && !before.endsWith(" ") && !before.endsWith("\n") && !before.endsWith("、") && !before.endsWith("，") && !before.endsWith("(")) {
+          prefix = " ";
         }
+        const inserted = prefix + textToAppend;
+        elem.value = before + inserted + after;
+        const newPos = start + inserted.length;
+        elem.setSelectionRange(newPos, newPos);
       } else {
-        elem.value = textToAppend;
+        if (val && !val.endsWith(" ") && !val.endsWith("\n")) {
+          elem.value = val + " " + textToAppend;
+        } else {
+          elem.value = val + textToAppend;
+        }
       }
+
       if (elem.focus) elem.focus();
-      showToastNotification(`📋 「${textToAppend}」 をO（所見）欄に追記しました！`);
+      showToastNotification(`📋 「${textToAppend}」 をO欄に追記しました！`);
     }
 
     /* Body Part Selection Handler */
@@ -3358,7 +3456,7 @@ function checkAndSendApprovalNotifications(ss) {
         if (document.getElementById('groupLaterality')) document.getElementById('groupLaterality').style.display = 'block';
         if (document.getElementById('groupNRS')) document.getElementById('groupNRS').style.display = 'block';
         if (document.getElementById('groupAdditionalBodyParts')) document.getElementById('groupAdditionalBodyParts').style.display = 'block';
-        if (document.getElementById('groupSOAP')) document.getElementById('groupSOAP').style.display = 'grid';
+        if (document.getElementById('groupSOAP')) document.getElementById('groupSOAP').style.display = 'flex';
       }
     }
 
@@ -3443,8 +3541,16 @@ function checkAndSendApprovalNotifications(ss) {
       };
 
       if (editingId) {
-        const index = treatments.findIndex(t => t.id === editingId);
-        if (index !== -1) treatments[index] = newRecord;
+        const normStr = (s) => String(s || '').replace(/[\s\u3000\-\/]+/g, '').toLowerCase();
+        let index = treatments.findIndex(t => t && (t.id === editingId || String(t.id) === String(editingId)));
+        if (index === -1) {
+          index = treatments.findIndex(t => t && normStr(t.date) === normStr(newRecord.date) && normStr(t.playerName || t.name) === normStr(newRecord.playerName) && normStr(t.staffName || t.sName) === normStr(newRecord.staffName));
+        }
+        if (index !== -1) {
+          treatments[index] = newRecord;
+        } else {
+          treatments.unshift(newRecord);
+        }
       } else {
         treatments.unshift(newRecord);
       }
@@ -3635,6 +3741,21 @@ function checkAndSendApprovalNotifications(ss) {
       document.getElementById('karteForm').reset();
       document.getElementById('editingRecordId').value = "";
       document.getElementById('formCardTitle').innerText = "新規メディカルカルテ記録";
+
+      const submitBtn = document.getElementById('karteSubmitBtn');
+      if (submitBtn) {
+        submitBtn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> <span>カルテ記録を保存</span>`;
+        submitBtn.style.background = "";
+        submitBtn.style.borderColor = "";
+      }
+
+      const banner = document.getElementById('editModeBanner');
+      if (banner) banner.style.display = "none";
+      const cancelBtn = document.getElementById('editCancelBtn');
+      if (cancelBtn) cancelBtn.style.display = "none";
+      const formCard = document.getElementById('mainKarteFormCard');
+      if (formCard) formCard.style.borderLeft = "1px solid var(--border-color)";
+
       document.querySelectorAll('.body-part-chip').forEach(c => c.classList.remove('selected'));
       document.querySelectorAll('.treatment-type-chip').forEach(c => c.classList.remove('selected'));
       document.querySelectorAll('#additionalBodyPartsGrid .body-part-chip').forEach(c => c.classList.remove('selected'));
@@ -3651,6 +3772,11 @@ function checkAndSendApprovalNotifications(ss) {
       }
 
       updateConditioningFormMode();
+    }
+
+    function cancelEditMode() {
+      resetForm();
+      alert("ℹ️ カルテ編集モードを解除し、新規入力状態に戻しました。");
     }
 
     /* Render Treatment Logs Cards (Matching Antigravity/index.html) */
@@ -3691,7 +3817,7 @@ function checkAndSendApprovalNotifications(ss) {
         return parseDate(b.date).localeCompare(parseDate(a.date));
       });
 
-      // 🌟 Robust Normalized Deduplication (重複カードの完全自動統合)
+      // 🌟 Robust Normalized Deduplication (重複カードの完全自動統合 - 塚脇望様含め全端末1枚統合)
       const normStr = (s) => String(s || '').replace(/[\s\u3000\-\/]+/g, '').toLowerCase();
       const seenRenderSigs = new Set();
       const dedupedFiltered = [];
@@ -3699,7 +3825,7 @@ function checkAndSendApprovalNotifications(ss) {
       for (const t of filtered) {
         const d = normStr(t.date);
         const n = normStr(t.playerName || t.name);
-        const st = normStr(t.staffName);
+        const st = normStr(t.staffName || t.sName);
         const pt = normStr(t.primaryInjuredPart || t.injuredPart);
         const tt = normStr(t.treatmentType);
         const s = normStr(t.soapS);
@@ -3709,11 +3835,21 @@ function checkAndSendApprovalNotifications(ss) {
         const m = normStr(t.conditioningMemo);
 
         const sig = `${d}|${n}|${st}|${pt}|${tt}|${s}|${o}|${a}|${p}|${m}`;
-        if (!seenRenderSigs.has(sig)) {
+        const keyBase = `${d}|${n}|${pt}|${tt}`;
+
+        if (!seenRenderSigs.has(sig) && !seenRenderSigs.has(keyBase + '|' + (s || o || m))) {
           seenRenderSigs.add(sig);
+          seenRenderSigs.add(keyBase + '|' + (s || o || m));
           dedupedFiltered.push(t);
         }
       }
+
+      window.currentRenderedLogs = dedupedFiltered;
+      window.logMap = {};
+      dedupedFiltered.forEach((t, idx) => {
+        const k = t.id || ('TR_KEY_' + idx);
+        window.logMap[k] = t;
+      });
 
       document.getElementById('logsCount').innerText = dedupedFiltered.length;
 
@@ -3722,7 +3858,7 @@ function checkAndSendApprovalNotifications(ss) {
         return;
       }
 
-      container.innerHTML = dedupedFiltered.map(t => {
+      container.innerHTML = dedupedFiltered.map((t, cardIdx) => {
         let memoContent = "";
         const cMemo = (t.conditioningMemo || "").trim();
         const sS = (t.soapS || "").trim();
@@ -3785,9 +3921,11 @@ function checkAndSendApprovalNotifications(ss) {
 
         const pObj = players.find(p => p.id === t.playerId) || {};
         const displayName = t.playerName || pObj.name || t.playerNameEn || t.playerId || '選手名未指定';
+        const rawJsonEnc = encodeURIComponent(JSON.stringify(t));
+        const recKey = t.id || ('TR_KEY_' + cardIdx);
 
         return `
-          <div class="treatment-log-item">
+          <div class="treatment-log-item" data-key="${recKey}" data-json="${rawJsonEnc}">
             <div class="treatment-log-header">
               <span class="treatment-log-player">
                 ${displayName}
@@ -3797,8 +3935,8 @@ function checkAndSendApprovalNotifications(ss) {
                 <span style="font-weight: 800; font-size: 0.88rem; color: #60a5fa;">
                   <i class="fa-solid fa-calendar-day"></i> ${t.date} (${t.staffName || ''})
                 </span>
-                <button class="btn-secondary" style="padding: 0.3rem 0.75rem; font-size: 0.78rem;" onclick="viewRecordDetail('${t.id}')">
-                  <i class="fa-solid fa-eye"></i> 詳細
+                <button type="button" class="btn-primary" style="padding: 0.35rem 0.85rem; font-size: 0.82rem;" onclick="editCardFromElem(this, '${recKey}')">
+                  <i class="fa-solid fa-pen-to-square"></i> 編集する
                 </button>
               </div>
             </div>
@@ -3816,89 +3954,11 @@ function checkAndSendApprovalNotifications(ss) {
       }).join('');
     }
 
-    /* Modal Detail View */
+    /* Dummy NO-OP Modal Detail View */
     function viewRecordDetail(recordId) {
-      const record = treatments.find(t => t.id === recordId);
-      if (!record) return;
-
-      const modalTitle = document.getElementById('modalTitle');
-      const modalBody = document.getElementById('modalBodyContent');
-      const modalEditBtn = document.getElementById('modalEditBtn');
-
-      modalTitle.innerText = `カルテ詳細: ${record.playerName} 選手 (${record.date})`;
-
-      modalBody.innerHTML = `
-        <div class="form-grid">
-          <div class="col-4 detail-row">
-            <span class="detail-label">実施日付</span>
-            <span class="detail-value">${record.date}</span>
-          </div>
-          <div class="col-4 detail-row">
-            <span class="detail-label">対象選手</span>
-            <span class="detail-value">${record.playerName} [${record.playerPosition}]</span>
-          </div>
-          <div class="col-4 detail-row">
-            <span class="detail-label">担当スタッフ</span>
-            <span class="detail-value">${record.staffName}</span>
-          </div>
-
-          <div class="col-6 detail-row">
-            <span class="detail-label">施術場所</span>
-            <span class="detail-value" style="color: #60a5fa;"><i class="fa-solid fa-location-dot"></i> ${record.location}</span>
-          </div>
-          <div class="col-6 detail-row">
-            <span class="detail-label">治療種別</span>
-            <span class="detail-value">${record.treatmentType || '—'}</span>
-          </div>
-
-          <div class="col-6 detail-row" style="background: var(--bg-base); padding: 0.85rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-            <span class="detail-label" style="color: #ff808b;">主要対象部位 [Primary Injured Part]</span>
-            <span class="detail-value" style="font-size: 1rem; font-weight: 800;">${record.primaryInjuredPart || record.injuredPart || '未特定'} ${record.primaryLaterality || record.laterality ? '[' + (record.primaryLaterality || record.laterality) + ']' : ''} ${record.primaryNRS || record.nrs ? '[NRS:' + (record.primaryNRS || record.nrs) + ']' : ''}</span>
-          </div>
-
-          <div class="col-6 detail-row" style="background: var(--bg-base); padding: 0.85rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-            <span class="detail-label" style="color: #60a5fa;">全体・その他部位 [All Injured Parts]</span>
-            <span class="detail-value" style="font-size: 0.95rem; font-weight: 700;">${record.allInjuredPartsDetail || '—'}</span>
-          </div>
-
-          ${record.soapS ? `
-            <div class="col-12 detail-row">
-              <span class="detail-label">S (Subjective: 主訴)</span>
-              <span class="detail-value">${record.soapS}</span>
-            </div>` : ''}
-
-          ${record.soapO ? `
-            <div class="col-12 detail-row">
-              <span class="detail-label">O (Objective: 客観的所見)</span>
-              <span class="detail-value">${record.soapO}</span>
-            </div>` : ''}
-
-          ${record.soapA ? `
-            <div class="col-12 detail-row">
-              <span class="detail-label">Assessment ・Action(A: 評価・診断・考察・今回の施術)</span>
-              <span class="detail-value">${record.soapA}</span>
-            </div>` : ''}
-
-          ${record.soapP ? `
-            <div class="col-12 detail-row">
-              <span class="detail-label">P (Plan: 治療計画)</span>
-              <span class="detail-value">${record.soapP}</span>
-            </div>` : ''}
-
-          ${record.conditioningMemo ? `
-            <div class="col-12 detail-row">
-              <span class="detail-label">コンディショニングメモ</span>
-              <span class="detail-value">${record.conditioningMemo}</span>
-            </div>` : ''}
-        </div>
-      `;
-
-      modalEditBtn.onclick = () => {
-        closeModal();
-        editRecord(record.id);
-      };
-
-      document.getElementById('detailModal').classList.add('active');
+      if (typeof editRecordByCardIndex === 'function') {
+        editRecordByCardIndex(0);
+      }
     }
 
     function closeModal() {
@@ -4023,37 +4083,150 @@ function checkAndSendApprovalNotifications(ss) {
       }, 2000);
     }
 
-    /* Edit Record Handler */
-    function editRecord(recordId) {
-      const record = treatments.find(t => t.id === recordId);
-      if (!record) return;
+    /* 4-Layer Robust Card Edit Handler */
+    function editCardFromElem(btn, recKey) {
+      if (currentRoleMode === 'viewer') {
+        alert("🔒 【Viewer（閲覧専用）モード】\n\nカルテの編集を行うには「Editor（編集者）」または「Admin（管理者）」権限が必要です。\n画面右上の「未サインイン (Viewer)」をクリックしてサインインまたは認証を行ってください。");
+        return;
+      }
 
+      let record = null;
+      if (recKey && window.logMap && window.logMap[recKey]) {
+        record = window.logMap[recKey];
+      }
+      if (!record && btn && typeof btn === 'object' && btn.closest) {
+        const itemElem = btn.closest('.treatment-log-item');
+        if (itemElem) {
+          const keyAttr = itemElem.getAttribute('data-key');
+          if (keyAttr && window.logMap && window.logMap[keyAttr]) {
+            record = window.logMap[keyAttr];
+          }
+          if (!record) {
+            const rawJson = itemElem.getAttribute('data-json');
+            if (rawJson) {
+              try { record = JSON.parse(decodeURIComponent(rawJson)); } catch(e) {}
+            }
+          }
+        }
+      }
+      if (!record && typeof btn === 'object' && btn !== null && !btn.tagName) {
+        record = btn;
+      }
+      if (!record && typeof recKey === 'string') {
+        const num = Number(recKey);
+        if (!isNaN(num) && window.currentRenderedLogs && window.currentRenderedLogs[num]) {
+          record = window.currentRenderedLogs[num];
+        } else {
+          record = (window.currentRenderedLogs || []).find(t => String(t.id) === recKey) || treatments.find(t => String(t.id) === recKey);
+        }
+      }
+      if (!record && window.currentRenderedLogs && window.currentRenderedLogs.length > 0) {
+        record = window.currentRenderedLogs[0];
+      }
+
+      if (!record) {
+        alert("⚠️ 編集対象のカルテ記録が見つかりませんでした。");
+        return;
+      }
+
+      // 1. Ensure selects populated & Switch View
+      try { populateFormSelects(); } catch(e) {}
       switchView('new-record');
 
-      document.getElementById('editingRecordId').value = record.id;
-      document.getElementById('formCardTitle').innerText = `カルテ編集: ${record.playerName} (${record.date})`;
-      document.getElementById('formDate').value = record.date;
+      // 2. Set Hidden Editing ID, Title & Active Blue Accent Border
+      const editId = record.id || `TR-${Date.now()}`;
+      record.id = editId; // Assign back to in-memory record to guarantee clean overwrite without duplicates
+      document.getElementById('editingRecordId').value = editId;
+      document.getElementById('formCardTitle').innerHTML = `<i class="fa-solid fa-pen-to-square" style="color: #60a5fa; margin-right: 6px;"></i> ✏️ カルテ編集: ${record.playerName || record.name || ''} 選手 (${record.date || ''})`;
+
+      const submitBtn = document.getElementById('karteSubmitBtn');
+      if (submitBtn) {
+        submitBtn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> <span>✏️ カルテ編集内容を更新保存</span>`;
+        submitBtn.style.background = "linear-gradient(135deg, #2563eb, #1d4ed8)";
+        submitBtn.style.borderColor = "#60a5fa";
+      }
+
+      const banner = document.getElementById('editModeBanner');
+      if (banner) {
+        banner.innerText = "✏️ 編集モード中";
+        banner.style.display = "inline-block";
+      }
+
+      const cancelBtn = document.getElementById('editCancelBtn');
+      if (cancelBtn) cancelBtn.style.display = "inline-block";
+
+      const formCard = document.getElementById('mainKarteFormCard');
+      if (formCard) formCard.style.borderLeft = "5px solid #3b82f6";
+
+      // 3. Date
+      if (record.date) {
+        document.getElementById('formDate').value = record.date;
+      }
+
+      // 4. Target Player Select (Space-Insensitive Robust Match)
       const pSel = document.getElementById('formPlayer');
       if (pSel) {
-        const pObj = players.find(p => p.id === record.playerId || p.name === record.playerName);
-        if (pObj) {
-          pSel.value = pObj.name;
+        const targetPName = record.playerName || record.name || "";
+        const targetPId = record.playerId || record.pId || "";
+        const normTarget = normStr(targetPName);
+
+        let matchedPlayer = players.find(p => (targetPId && p.id === targetPId) || normStr(p.name) === normTarget);
+        if (matchedPlayer) {
+          pSel.value = matchedPlayer.name;
         } else {
-          pSel.value = record.playerName || record.playerId || "";
+          let existingOpt = Array.from(pSel.options).find(o => normStr(o.value) === normTarget || normStr(o.text).includes(normTarget));
+          if (existingOpt) {
+            pSel.value = existingOpt.value;
+          } else if (targetPName) {
+            const tempOpt = document.createElement('option');
+            tempOpt.value = targetPName;
+            tempOpt.textContent = targetPName;
+            tempOpt.selected = true;
+            pSel.appendChild(tempOpt);
+            pSel.value = targetPName;
+          }
         }
-        onFormPlayerSelectChange();
+        try { onFormPlayerSelectChange(); } catch(e) {}
       }
-      document.getElementById('formStaff').value = record.staffId || "";
+
+      // 5. Staff Select (Space-Insensitive Robust Match)
+      const sSel = document.getElementById('formStaff');
+      if (sSel) {
+        const targetSName = record.staffName || record.sName || "";
+        const targetSId = record.staffId || record.sId || "";
+        const normTargetS = normStr(targetSName);
+
+        let matchedStaff = staff.find(s => (targetSId && s.id === targetSId) || normStr(s.name) === normTargetS);
+        if (matchedStaff) {
+          sSel.value = matchedStaff.name;
+        } else {
+          let existingOpt = Array.from(sSel.options).find(o => normStr(o.value) === normTargetS || normStr(o.text).includes(normTargetS));
+          if (existingOpt) {
+            sSel.value = existingOpt.value;
+          } else if (targetSName) {
+            const tempOpt = document.createElement('option');
+            tempOpt.value = targetSName;
+            tempOpt.textContent = targetSName;
+            tempOpt.selected = true;
+            sSel.appendChild(tempOpt);
+            sSel.value = targetSName;
+          }
+        }
+      }
+
+      // 6. Location, Laterality, NRS
       document.getElementById('formLocation').value = record.location || "クラブハウス";
-      document.getElementById('formLaterality').value = record.laterality || "";
-      document.getElementById('formNRS').value = record.nrs || "";
+      document.getElementById('formLaterality').value = record.primaryLaterality || record.laterality || "";
+      document.getElementById('formNRS').value = record.primaryNRS || record.nrs || "";
+
+      // 7. SOAP S, O, A, P & Memo
       document.getElementById('formSoapS').value = record.soapS || "";
       document.getElementById('formSoapO').value = record.soapO || "";
       document.getElementById('formSoapA').value = record.soapA || "";
       document.getElementById('formSoapP').value = record.soapP || "";
       document.getElementById('formConditioningMemo').value = record.conditioningMemo || "";
 
-      // Set treatment types
+      // 8. Treatment Types Chips
       const types = (record.treatmentType || "").split(',').map(s => s.trim());
       document.querySelectorAll('.treatment-type-chip').forEach(chip => {
         if (types.some(t => t && chip.innerText.trim().includes(t))) {
@@ -4064,12 +4237,11 @@ function checkAndSendApprovalNotifications(ss) {
       });
       document.getElementById('selectedTreatmentTypes').value = record.treatmentType || "";
 
-      updateConditioningFormMode();
-
-      // Set primary body part
+      // 9. Primary Body Part Chip (Ensure all chips visible in edit mode)
       const primaryPart = record.primaryInjuredPart || record.injuredPart || "";
       document.querySelectorAll('#bodyPartsGrid .body-part-chip').forEach(chip => {
-        if (chip.innerText.trim() === primaryPart.trim()) {
+        chip.style.display = 'block';
+        if (primaryPart && chip.innerText.trim() === primaryPart.trim()) {
           chip.classList.add('selected');
         } else {
           chip.classList.remove('selected');
@@ -4077,17 +4249,104 @@ function checkAndSendApprovalNotifications(ss) {
       });
       document.getElementById('selectedInjuredPart').value = primaryPart;
 
-      // Set additional body parts chips
-      const addPartsStr = record.additionalBodyParts || "";
-      const addPartsArr = addPartsStr.split(',').map(s => s.trim());
-      document.querySelectorAll('#additionalBodyPartsGrid .body-part-chip').forEach(chip => {
-        if (addPartsArr.includes(chip.innerText.trim())) {
-          chip.classList.add('selected');
-        } else {
-          chip.classList.remove('selected');
+      // 10. Additional Body Parts Chips
+      const addPartsStr = record.additionalBodyParts || record.allInjuredPartsDetail || "";
+      const addPartsArr = addPartsStr.split(',').map(s => s.trim()).filter(Boolean);
+      const addGrid = document.getElementById('additionalBodyPartsGrid');
+      if (addGrid) {
+        if (addPartsArr.length > 0) {
+          addGrid.style.display = 'grid';
         }
-      });
+        document.querySelectorAll('#additionalBodyPartsGrid .body-part-chip').forEach(chip => {
+          if (addPartsArr.some(ap => ap && chip.innerText.trim().includes(ap))) {
+            chip.classList.add('selected');
+          } else {
+            chip.classList.remove('selected');
+          }
+        });
+      }
+
+      // 11. Trigger updateConditioningFormMode, then ensure any non-empty fields of record are displayed for editing
+      try { updateConditioningFormMode(); } catch(e) {}
+
+      if (record.soapS || record.soapO || record.soapA || record.soapP) {
+        if (document.getElementById('groupSOAP')) document.getElementById('groupSOAP').style.display = 'flex';
+      }
+      if (record.conditioningMemo) {
+        if (document.getElementById('groupConditioningMemo')) document.getElementById('groupConditioningMemo').style.display = 'block';
+      }
+
+      try { renderSpecialTestChips(); } catch(e) {}
+
+      // Scroll to top of main form smoothly
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      alert(`✏️ 【編集モード】\n「${record.playerName || record.name || ''}」 選手のカルテ (${record.date || ''}) を読み込みました！\n修正後に画面下部の「保存」を押してください。`);
     }
+
+    function closeEditKarteModal() {
+      const editModal = document.getElementById('editKarteModal');
+      if (editModal) editModal.classList.remove('active');
+    }
+
+    function saveKarteFromEditModal() {
+      const editId = document.getElementById('editModalRecordId').value;
+      const recDate = document.getElementById('editModalDate').value;
+      const pName = document.getElementById('editModalPlayerName').value;
+      const sName = document.getElementById('editModalStaffName').value;
+      const loc = document.getElementById('editModalLocation').value;
+      const tType = document.getElementById('editModalType').value;
+      const sS = document.getElementById('editModalSoapS').value;
+      const sO = document.getElementById('editModalSoapO').value;
+      const sA = document.getElementById('editModalSoapA').value;
+      const sP = document.getElementById('editModalSoapP').value;
+      const cMemo = document.getElementById('editModalMemo').value;
+
+      let baseObj = window.currentEditingRecordObj || {};
+      const newRecord = Object.assign({}, baseObj, {
+        id: editId,
+        date: recDate,
+        playerName: pName,
+        staffName: sName,
+        location: loc,
+        treatmentType: tType,
+        soapS: sS,
+        soapO: sO,
+        soapA: sA,
+        soapP: sP,
+        conditioningMemo: cMemo,
+        timestamp: new Date().toLocaleDateString('ja-JP')
+      });
+
+      const normStr = (s) => String(s || '').replace(/[\s\u3000\-\/]+/g, '').toLowerCase();
+      let index = treatments.findIndex(t => t && (t.id === editId || String(t.id) === String(editId)));
+      if (index === -1) {
+        index = treatments.findIndex(t => t && normStr(t.date) === normStr(newRecord.date) && normStr(t.playerName || t.name) === normStr(newRecord.playerName));
+      }
+
+      if (index !== -1) {
+        treatments[index] = newRecord;
+      } else {
+        treatments.unshift(newRecord);
+      }
+
+      // Save Local Storage
+      safeStorage.setItem('lupus_emr_treatments', JSON.stringify(treatments));
+
+      // Push to Google Sheets via GAS Web App
+      if (typeof sendRecordToGoogleSheets === 'function') {
+        try { sendRecordToGoogleSheets(newRecord); } catch(e) {}
+      }
+
+      closeEditKarteModal();
+      try { renderTreatmentLogs(); } catch(e) {}
+      alert(`✅ 【編集完了】\n「${pName}」 選手のカルテを上書き保存いたしました！`);
+    }
+
+    window.editCardFromElem = editCardFromElem;
+    window.startKarteEdit = editCardFromElem;
+    window.editRecordByCardIndex = editCardFromElem;
+    window.editRecordDirect = editCardFromElem;
+    window.editRecord = editCardFromElem;
 
     /* Update Player Status Handler (Allowed for Editor & Admin, Blocked for Viewer) */
     function updatePlayerStatus(playerId, newStatus) {
