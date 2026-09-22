@@ -1021,7 +1021,8 @@
             <span class="status-dot online" style="width: 5px; height: 5px; background: #34d399; border-radius: 50%; display: inline-block;"></span>
             <span>スプレッドシート同期中</span>
           </div>
-          <div class="header-user" style="display: flex; align-items: center; gap: 0.35rem; white-space: nowrap;">
+          <button type="button" class="btn-primary" onclick="openPasscodeEmailModal('editor')" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); border: 1px solid #60a5fa; color: #fff; font-size: 0.72rem; font-weight: 800; padding: 0.2rem 0.55rem; border-radius: 6px; white-space: nowrap; cursor: pointer;" title="クリックしてメールアドレスでサインインまたはアクセス申請"><i class="fa-solid fa-user-check"></i> <span>サインイン/申請</span></button>
+          <div class="header-user" onclick="triggerHeaderUserRoleUnlock()" style="display: flex; align-items: center; gap: 0.35rem; white-space: nowrap; cursor: pointer;" title="クリックしてサインインまたはモード設定">
             <div class="user-avatar" style="width: 26px; height: 26px; font-size: 0.75rem;"><i class="fa-solid fa-user-shield"></i></div>
             <div class="user-info">
               <span class="user-name" style="font-size: 0.75rem;">東芝メディカルチーム</span>
@@ -1057,7 +1058,7 @@
             <div class="card-header">
               <div class="card-title">
                 <i class="fa-solid fa-user-lock"></i>
-                <span>ログイン権限 / モード選択（Viewer / Editor / Admin）</span>
+                <span>ログイン権限 / モード選択（Viewer / Editor）</span>
               </div>
               <span id="currentRoleDisplayBadge" style="font-size: 0.82rem; font-weight: 800; padding: 4px 12px; border-radius: 20px; background: rgba(16,185,129,0.2); color: #34d399; border: 1px solid rgba(16,185,129,0.4);">
                 👁 現在の権限: Viewer（閲覧専用）
@@ -1065,14 +1066,15 @@
             </div>
 
             <div style="max-width: 600px; margin: 0.5rem 0;">
-              <!-- Editor・Admin Access Request & Sign-In Card -->
-              <div class="role-card" onclick="selectRoleMode('editor')" style="background: linear-gradient(135deg, rgba(37,99,235,0.15), rgba(30,41,59,0.7)); border: 2px solid #2563eb; padding: 1.4rem; border-radius: 12px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+              <!-- Editor Access Request & Sign-In Card -->
+              <div class="role-card" id="btnRoleCardSignIn" onclick="promptDirectEmailSignIn()" style="background: linear-gradient(135deg, rgba(37,99,235,0.15), rgba(30,41,59,0.7)); border: 2px solid #2563eb; padding: 1.4rem; border-radius: 12px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.8rem;">
                   <span style="font-size: 1.4rem; color: #60a5fa;"><i class="fa-solid fa-user-gear"></i></span>
                   <span style="font-size: 0.78rem; font-weight: 800; background: #2563eb; color: #fff; padding: 4px 12px; border-radius: 20px;">アクセス権限 申請 ＆ サインイン</span>
                 </div>
-                <h4 style="font-size: 1.15rem; font-weight: 900; margin-bottom: 0.4rem; color: #60a5fa;">📝 Editor・Adminアクセス申請 ＆ サインイン</h4>
-                <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5;">ご氏名とメールアドレスを入力して申請。管理者による承認（approved）完了後、カルテの入力・編集機能が開放されます。</p>
+                <h4 style="font-size: 1.15rem; font-weight: 900; margin-bottom: 0.4rem; color: #60a5fa;">📝 Editorアクセス申請 ＆ サインイン</h4>
+                <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 0.8rem;">ご氏名とメールアドレスを入力してサインイン。スプレッドシートの承認（approved）確認後、カルテの入力・編集機能が開放されます。</p>
+                <button type="button" class="btn-primary" onclick="promptDirectEmailSignIn()" style="width: 100%; padding: 0.6rem 1rem; font-size: 0.9rem; font-weight: 800; background: linear-gradient(135deg, #2563eb, #1d4ed8); border-radius: 8px; cursor: pointer; border: 1px solid #60a5fa; color: #fff; display: flex; align-items: center; justify-content: center; gap: 0.5rem;"><i class="fa-solid fa-envelope-open-text"></i> メールアドレスを入力してサインイン / アクセス申請</button>
               </div>
             </div>
           </div>
@@ -1518,6 +1520,44 @@
                 </div>
               </div>
             </div>
+
+            <!-- Dashboard Feature 1: Player Treatment Count & Frequency Ranking -->
+            <div class="col-12" style="margin-top: 1rem;">
+              <div class="card">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem;">
+                  <div class="card-title">
+                    <i class="fa-solid fa-users-rectangle" style="color: #60a5fa;"></i>
+                    <span>👥 選手別 トリートメント・ケア受療回数一覧</span>
+                  </div>
+                  <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <input type="text" id="dashPlayerSearchInput" class="form-input" placeholder="選手名・ポジションで検索..." style="padding: 0.4rem 0.75rem; font-size: 0.82rem; width: 230px;" oninput="updateDashboardStats()">
+                  </div>
+                </div>
+                <div class="card-body" style="padding: 1rem;">
+                  <div id="dashPlayerCountsGrid" style="display: flex; flex-direction: column; gap: 0.75rem; max-height: 520px; overflow-y: auto;">
+                    <!-- Dynamically filled -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dashboard Feature 2: Treatment Primary Injured Part Frequency Ranking (Excluding Conditioning) -->
+            <div class="col-12" style="margin-top: 1rem;">
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title">
+                    <i class="fa-solid fa-crosshairs" style="color: #f43f5e;"></i>
+                    <span>🎯 治療（トリートメント：コンディショニング以外）主要対象部位ランキング</span>
+                  </div>
+                </div>
+                <div class="card-body" style="padding: 1.25rem;">
+                  <div id="dashTreatmentPartsList" style="display: flex; flex-direction: column; gap: 0.85rem;">
+                    <!-- Dynamically filled -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </section>
 
@@ -1581,6 +1621,21 @@
           </div>
         </div>
 
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem;">
+          <div>
+            <label class="form-label" style="font-size: 0.78rem; font-weight: 800; color: #94a3b8; margin-bottom: 0.25rem; display: block;">傷病・施術部位</label>
+            <input type="text" id="editModalInjuredPart" class="form-input" style="padding: 0.45rem 0.65rem; font-size: 0.88rem; background: var(--bg-base);">
+          </div>
+          <div>
+            <label class="form-label" style="font-size: 0.78rem; font-weight: 800; color: #94a3b8; margin-bottom: 0.25rem; display: block;">左右区分</label>
+            <input type="text" id="editModalLaterality" class="form-input" placeholder="例: Right / Left" style="padding: 0.45rem 0.65rem; font-size: 0.88rem; background: var(--bg-base);">
+          </div>
+          <div>
+            <label class="form-label" style="font-size: 0.78rem; font-weight: 800; color: #94a3b8; margin-bottom: 0.25rem; display: block;">NRS (痛み 0-10)</label>
+            <input type="number" id="editModalNRS" min="0" max="10" class="form-input" style="padding: 0.45rem 0.65rem; font-size: 0.88rem; background: var(--bg-base);">
+          </div>
+        </div>
+
         <div>
           <label class="form-label" style="font-size: 0.78rem; font-weight: 800; color: #38bdf8; margin-bottom: 0.25rem; display: block;">S (Subjective: 主訴)</label>
           <textarea id="editModalSoapS" class="form-textarea" rows="2" style="padding: 0.45rem 0.65rem; font-size: 0.85rem; width: 100%; background: var(--bg-base); border-color: rgba(56,189,248,0.3);"></textarea>
@@ -1620,7 +1675,7 @@
   <div class="modal-backdrop" id="passcodeEmailModal">
     <div class="modal-box" style="max-width: 520px;">
       <div class="modal-header">
-        <h3 id="passcodeEmailModalTitle"><i class="fa-solid fa-user-gear" style="color: #60a5fa;"></i> 📝 Editor・Adminアクセス申請 ＆ サインイン</h3>
+        <h3 id="passcodeEmailModalTitle"><i class="fa-solid fa-user-gear" style="color: #60a5fa;"></i> 📝 Editorアクセス申請 ＆ サインイン</h3>
         <button class="modal-close-btn" onclick="closePasscodeEmailModal()"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
@@ -1646,7 +1701,6 @@
             <label class="form-label">申請希望権限 <span class="required-badge">必須</span></label>
             <select id="reqUserRole" class="form-select" required>
               <option value="Editor">📝 Editor（カルテ入力・編集権限）</option>
-              <option value="Admin">👑 Admin（最高管理者権限）</option>
             </select>
           </div>
 
@@ -2145,7 +2199,7 @@ function checkAndSendApprovalNotifications(ss) {
         staffName: "滝田 陽介",
         location: "クラブハウス",
         playerStatus: "Fit",
-        primaryInjuredPart: "Lower Extremity（下肢全般）",
+        primaryInjuredPart: "Lower Body",
         primaryLaterality: "N/A",
         primaryNRS: "Unassessed",
         treatmentType: "Conditioning （疲労ケア）",
@@ -2162,7 +2216,7 @@ function checkAndSendApprovalNotifications(ss) {
         staffName: "滝田 陽介",
         location: "クラブハウス",
         playerStatus: "Fit",
-        primaryInjuredPart: "Shoulder（肩関節）",
+        primaryInjuredPart: "Shoulder",
         primaryLaterality: "Left",
         primaryNRS: "2",
         treatmentType: "Massage（マッサージ/徒手）",
@@ -2180,7 +2234,7 @@ function checkAndSendApprovalNotifications(ss) {
         staffName: "滝田 陽介",
         location: "クラブハウス",
         playerStatus: "Fit",
-        primaryInjuredPart: "Lower Extremity（下肢全般）",
+        primaryInjuredPart: "Lower Body",
         primaryLaterality: "N/A",
         primaryNRS: "Unassessed",
         treatmentType: "Conditioning （疲労ケア）",
@@ -2197,7 +2251,7 @@ function checkAndSendApprovalNotifications(ss) {
         staffName: "滝田 陽介",
         location: "クラブハウス",
         playerStatus: "Fit",
-        primaryInjuredPart: "Lower Extremity（下肢全般）",
+        primaryInjuredPart: "Lower Body",
         primaryLaterality: "N/A",
         treatmentType: "Conditioning （疲労ケア）",
         conditioningMemo: "右ハムストリングを中心としたコンディショニング 胸腰筋膜タイトネスあり 右坐骨周囲の滑走不全あり"
@@ -2213,7 +2267,7 @@ function checkAndSendApprovalNotifications(ss) {
         staffName: "滝田 陽介",
         location: "クラブハウス",
         playerStatus: "Fit",
-        primaryInjuredPart: "Lower Extremity（下肢全般）",
+        primaryInjuredPart: "Lower Body",
         primaryLaterality: "N/A",
         primaryNRS: "Unassessed",
         treatmentType: "Conditioning （疲労ケア）",
@@ -2230,7 +2284,7 @@ function checkAndSendApprovalNotifications(ss) {
         staffName: "滝田 陽介",
         location: "クラブハウス",
         playerStatus: "Fit",
-        primaryInjuredPart: "Knee（膝関節部）",
+        primaryInjuredPart: "Knee",
         primaryLaterality: "N/A",
         treatmentType: "Massage（マッサージ/徒手）",
         soapS: "膝関節内側の疼痛 荷重時痛あり 荷重時にハムストリングに力を入れると疼痛あり 伸展時に動揺性を感じる",
@@ -2249,7 +2303,7 @@ function checkAndSendApprovalNotifications(ss) {
         staffName: "滝田 陽介",
         location: "クラブハウス",
         playerStatus: "Fit",
-        primaryInjuredPart: "Knee（膝関節部）",
+        primaryInjuredPart: "Knee",
         primaryLaterality: "Right",
         primaryNRS: "Unassessed",
         treatmentType: "Massage（マッサージ/徒手）",
@@ -2269,7 +2323,7 @@ function checkAndSendApprovalNotifications(ss) {
         staffName: "滝田 陽介",
         location: "クラブハウス",
         playerStatus: "Out",
-        primaryInjuredPart: "Knee（膝関節部）",
+        primaryInjuredPart: "Knee",
         primaryLaterality: "N/A",
         primaryNRS: "Unassessed",
         treatmentType: "Massage（マッサージ/徒手）",
@@ -2289,7 +2343,7 @@ function checkAndSendApprovalNotifications(ss) {
         staffName: "滝田 陽介",
         location: "クラブハウス",
         playerStatus: "Fit",
-        primaryInjuredPart: "Knee（膝関節部）",
+        primaryInjuredPart: "Knee",
         primaryLaterality: "N/A",
         treatmentType: "Massage（マッサージ/徒手）",
         soapS: "腰部痛 ランニング，ストレングスの疲労により発症しているように感じる",
@@ -2308,7 +2362,7 @@ function checkAndSendApprovalNotifications(ss) {
         staffName: "滝田 陽介",
         location: "クラブハウス",
         playerStatus: "Limit",
-        primaryInjuredPart: "Knee（膝関節部）",
+        primaryInjuredPart: "Knee",
         primaryLaterality: "N/A",
         treatmentType: "Massage（マッサージ/徒手）",
         soapS: "ランニング中にまた足部から疼痛が突き上げるような嫌な感じがあり，そこから怖くて走れず練習を中止",
@@ -2327,7 +2381,7 @@ function checkAndSendApprovalNotifications(ss) {
         staffName: "滝田 陽介",
         location: "クラブハウス",
         playerStatus: "Fit",
-        primaryInjuredPart: "Lower Extremity（下肢全般） [Bilateral]",
+        primaryInjuredPart: "Lower Body",
         primaryLaterality: "N/A",
         treatmentType: "Conditioning （疲労ケア）",
         conditioningMemo: "下肢の疲労に対するマッサージを実施\n腰部，臀部のタイトネスあり"
@@ -2354,6 +2408,28 @@ function checkAndSendApprovalNotifications(ss) {
       } catch(e) {
         return typeof SPREADSHEET_PLAYERS !== 'undefined' ? [...SPREADSHEET_PLAYERS] : [];
       }
+    }
+
+    function getCanonicalBodyPart(rawPart) {
+      if (!rawPart) return '';
+      let str = String(rawPart).trim();
+      // Remove Japanese parens like （膝関節部）, （膝関節）, （肩関節）, （下肢全般） and brackets like [Bilateral]
+      str = str.replace(/（[^）]*）/g, '')
+               .replace(/\([^)]*[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uffef\u4e00-\u9faf][^)]*\)/g, '')
+               .replace(/\[[^\]]*\]/g, '')
+               .trim();
+      
+      // Standardize common legacy or alternate names to exact form chip values
+      if (str === 'Lower Extremity' || str === 'Lower Extremities' || str === '下肢全般') return 'Lower Body';
+      if (str === 'Upper Extremity' || str === 'Upper Extremities' || str === '上肢全般') return 'Upper Body';
+      if (str === 'Lumbar Spine' || str === 'Lower Back' || str === 'Gluteal') return 'Lumbar Spine / Lower Back / Gluteal';
+      if (str === 'Thoracic Spine' || str === 'Upper Back') return 'Thoracic Spine / Upper Back';
+      if (str === 'Neck') return 'Neck (Cervical Spine)';
+      if (str === 'Wrist' || str === 'Hand' || str === 'Fingers') return 'Wrist / Hand / Fingers';
+      if (str === 'Hip' || str === 'Groin') return 'Hip / Groin';
+      if (str === 'Foot' || str === 'Toes') return 'Foot / Toes';
+      
+      return str;
     }
 
     const safeStorage = {
@@ -2408,8 +2484,10 @@ function checkAndSendApprovalNotifications(ss) {
     var treatments = [];
     try { treatments = loadTreatmentsData(); } catch(e) { treatments = Array.isArray(INITIAL_TREATMENTS) ? [...INITIAL_TREATMENTS] : []; }
 
-    var currentRoleMode = 'editor';
-    try { safeStorage.setItem('lupus_emr_role', 'editor'); } catch(e) {}
+    var savedRole = safeStorage.getItem('lupus_emr_role');
+    var activeEmail = (safeStorage.getItem('lupus_emr_user_email') || '').toLowerCase();
+    var currentRoleMode = 'viewer';
+    try { safeStorage.setItem('lupus_emr_role', 'viewer'); } catch(e) {}
     var currentAdminPasscode = safeStorage.getItem('lupus_emr_admin_pass') || 'Lupus-1007';
     var currentEditorPasscode = safeStorage.getItem('lupus_emr_editor_pass') || 'team-medical';
     window.accessStatusMap = window.accessStatusMap || {};
@@ -2501,6 +2579,7 @@ function checkAndSendApprovalNotifications(ss) {
           document.body.classList.add('role-editor');
           document.body.classList.remove('role-admin', 'role-viewer');
         } else {
+          currentRoleMode = 'viewer';
           document.body.classList.add('role-viewer');
           document.body.classList.remove('role-admin', 'role-editor');
         }
@@ -2519,7 +2598,6 @@ function checkAndSendApprovalNotifications(ss) {
           badge.style.color = '#60a5fa';
           badge.style.borderColor = 'rgba(37,99,235,0.4)';
         } else {
-          currentRoleMode = 'viewer';
           badge.innerHTML = '👁 現在の権限: Viewer（閲覧専用）';
           badge.style.background = 'rgba(16,185,129,0.2)';
           badge.style.color = '#34d399';
@@ -2538,18 +2616,21 @@ function checkAndSendApprovalNotifications(ss) {
           if (headerNameElem) headerNameElem.textContent = (userObj && userObj.name) ? userObj.name : '東芝メディカルチーム';
 
           if (currentRoleMode === 'admin') {
-            headerEmailElem.innerHTML = `<span style="color: #ef4444; font-weight: 700; font-size: 0.75rem;">👤 ${activeEmail} (ADMIN)</span>`;
+            headerEmailElem.innerHTML = `<span style="color: #ef4444; font-weight: 700; font-size: 0.75rem;">👑 ${activeEmail} (ADMIN)</span>`;
           } else if (currentRoleMode === 'editor') {
-            headerEmailElem.innerHTML = `<span style="color: #34d399; font-weight: 700; font-size: 0.75rem;">👤 ${activeEmail} (EDITOR)</span>`;
+            headerEmailElem.innerHTML = `<span style="color: #34d399; font-weight: 700; font-size: 0.75rem;">📝 ${activeEmail} (EDITOR)</span>`;
           } else {
-            headerEmailElem.innerHTML = `<span style="color: #60a5fa; font-weight: 600; font-size: 0.75rem;">👤 ${activeEmail} (VIEWER)</span>`;
+            headerEmailElem.innerHTML = `<span style="color: #60a5fa; font-weight: 600; font-size: 0.75rem;">🔒 ${activeEmail} (VIEWER)</span>`;
           }
         } else if (currentRoleMode === 'admin') {
           if (headerNameElem) headerNameElem.textContent = '最高管理者 (Admin)';
           headerEmailElem.innerHTML = `<span style="color: #f59e0b; font-weight: 700; font-size: 0.75rem;">👑 Admin (Lupus-1007)</span>`;
+        } else if (currentRoleMode === 'editor') {
+          if (headerNameElem) headerNameElem.textContent = '東芝メディカルチーム';
+          headerEmailElem.innerHTML = `<span style="color: #34d399; font-weight: 700; font-size: 0.75rem;">📝 Editor (編集可能)</span>`;
         } else {
           if (headerNameElem) headerNameElem.textContent = '東芝メディカルチーム';
-          headerEmailElem.innerHTML = `<span style="color: #60a5fa; font-weight: 600; font-size: 0.75rem;">未サインイン (Viewer)</span>`;
+          headerEmailElem.innerHTML = `<span style="color: #60a5fa; font-weight: 600; font-size: 0.75rem;">🔒 未サインイン (Viewer)</span>`;
         }
       }
 
@@ -2573,11 +2654,49 @@ function checkAndSendApprovalNotifications(ss) {
         if (currentRoleMode === 'viewer') {
           submitBtn.style.opacity = '0.5';
           submitBtn.style.cursor = 'not-allowed';
-          submitBtn.title = '🔒 Viewer（閲覧専用）モードのため保存不可（Editor/Adminへの切り替えが必要です）';
+          submitBtn.disabled = true;
+          submitBtn.title = '🔒 Viewer（閲覧専用）モードのため保存不可（Editor権限へのサインインが必要です）';
         } else {
           submitBtn.style.opacity = '1';
           submitBtn.style.cursor = 'pointer';
+          submitBtn.disabled = false;
           submitBtn.title = 'カルテ記録を保存します';
+        }
+      }
+
+      // Update Form Controls & Inputs inside #karteForm for Viewer mode lock
+      const karteFormElem = document.getElementById('karteForm');
+      if (karteFormElem) {
+        const isViewer = (currentRoleMode === 'viewer');
+        const formControls = karteFormElem.querySelectorAll('input, select, textarea, button');
+        formControls.forEach(control => {
+          control.disabled = isViewer;
+          if (control.tagName === 'INPUT' || control.tagName === 'TEXTAREA') {
+            control.readOnly = isViewer;
+          }
+        });
+
+        if (isViewer) {
+          karteFormElem.style.pointerEvents = 'none';
+          karteFormElem.style.opacity = '0.5';
+        } else {
+          karteFormElem.style.pointerEvents = 'auto';
+          karteFormElem.style.opacity = '1';
+        }
+
+        let lockBanner = document.getElementById('karteFormViewerLockBanner');
+        if (isViewer) {
+          if (!lockBanner && karteFormElem.parentNode) {
+            lockBanner = document.createElement('div');
+            lockBanner.id = 'karteFormViewerLockBanner';
+            lockBanner.style.cssText = 'background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #f87171; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; pointer-events: auto;';
+            lockBanner.innerHTML = '<i class="fa-solid fa-lock" style="font-size: 1.1rem;"></i> <span>🔒 Viewer（閲覧専用）モードのため入力・編集はロックされています。記入を行うには画面右上の「未サインイン (Viewer)」をクリックして認証を行ってください。</span>';
+            karteFormElem.parentNode.insertBefore(lockBanner, karteFormElem);
+          } else if (lockBanner) {
+            lockBanner.style.display = 'flex';
+          }
+        } else if (lockBanner) {
+          lockBanner.style.display = 'none';
         }
       }
 
@@ -2602,6 +2721,7 @@ function checkAndSendApprovalNotifications(ss) {
         try { renderPlayersRoster(); } catch(eRoster) {}
       }
     }
+    window.updateRoleDisplayUI = updateRoleDisplayUI;
 
     function triggerAdminSecretLogin() {
       const pass = prompt("🔑 【Admin（最高管理者）認証】\n管理者パスコードを入力してください:\n\n（※大文字・小文字を正確に入力してください）", "");
@@ -2618,6 +2738,94 @@ function checkAndSendApprovalNotifications(ss) {
     }
     window.triggerAdminSecretLogin = triggerAdminSecretLogin;
 
+    function promptDirectEmailSignIn() {
+      const currentEmail = safeStorage.getItem('lupus_emr_user_email') || '';
+      const emailInput = prompt("📧 【アクセス認証・サインイン】\nスプレッドシートに登録済みのメールアドレスを入力してください:\n\n（例: yosuke1784@mac.com）", currentEmail);
+      if (emailInput === null) return;
+      
+      const email = emailInput.trim().toLowerCase();
+      if (!email) {
+        alert("メールアドレスを入力してください。");
+        return;
+      }
+
+      const userObj = (window.accessUserMap && window.accessUserMap[email]) ? window.accessUserMap[email] : null;
+      if (userObj) {
+        const status = (userObj.status || '').toLowerCase();
+        if (status.includes('rejected') || status.includes('拒否') || status.includes('離脱') || status.includes('ng')) {
+          currentRoleMode = 'viewer';
+          safeStorage.setItem('lupus_emr_role', 'viewer');
+          safeStorage.setItem('lupus_emr_user_email', email);
+          updateRoleDisplayUI();
+          alert(`⛔️ 【アクセス拒否】\nご指定のメールアドレス（ ${email} ）は管理者により「rejected（拒否）」に設定されています。`);
+          return;
+        }
+        if (status.includes('approved') || status.includes('合流') || status.includes('承認')) {
+          const grantedRoleStr = (userObj.grantedRole || 'Editor').trim();
+          const gLower = grantedRoleStr.toLowerCase();
+          let newRole = 'editor';
+          if (gLower.includes('admin') || grantedRoleStr.includes('管理者')) {
+            newRole = 'admin';
+          } else if (gLower.includes('editor') || grantedRoleStr.includes('編集')) {
+            newRole = 'editor';
+          } else {
+            newRole = 'viewer';
+          }
+
+          currentRoleMode = newRole;
+          safeStorage.setItem('lupus_emr_role', newRole);
+          safeStorage.setItem('lupus_emr_user_email', email);
+          updateRoleDisplayUI();
+          showToastNotification(`✅ 【${newRole.toUpperCase()}】として正常にサインインしました！`);
+          if (newRole !== 'viewer') {
+            switchView('new-record');
+          }
+          return;
+        } else {
+          alert(`⏳ 【承認待ち】\nご指定のメールアドレス（ ${email} ）は現在承認（approved）待ちです。`);
+          return;
+        }
+      } else {
+        // Email not yet in map - save email and trigger modal or GAS request
+        safeStorage.setItem('lupus_emr_user_email', email);
+        openPasscodeEmailModal('editor');
+      }
+    }
+    window.promptDirectEmailSignIn = promptDirectEmailSignIn;
+
+    function triggerHeaderUserRoleUnlock() {
+      const activeUserEmail = (safeStorage.getItem('lupus_emr_user_email') || '').toLowerCase();
+      const userObj = (activeUserEmail && window.accessUserMap) ? window.accessUserMap[activeUserEmail] : null;
+
+      if (currentRoleMode === 'admin' || currentRoleMode === 'editor') {
+        const choice = confirm(`📝 現在【${currentRoleMode.toUpperCase()}】権限（${activeUserEmail || 'ログイン中'}）でアクセス中です。\n\n別のメールアドレスでサインインし直しますか？`);
+        if (choice) {
+          promptDirectEmailSignIn();
+        }
+        return;
+      }
+
+      if (userObj && (userObj.status || '').toLowerCase().includes('approved')) {
+        const grantedRole = userObj.grantedRole || 'Editor';
+        const gLower = grantedRole.toLowerCase();
+        if (gLower.includes('admin') || grantedRole.includes('管理者')) {
+          currentRoleMode = 'admin';
+        } else if (gLower.includes('editor') || grantedRole.includes('編集')) {
+          currentRoleMode = 'editor';
+        } else {
+          currentRoleMode = 'viewer';
+          alert("🔒 【閲覧専用】ご指定のアカウント（" + activeUserEmail + "）はViewer権限に設定されています。");
+          return;
+        }
+        safeStorage.setItem('lupus_emr_role', currentRoleMode);
+        updateRoleDisplayUI();
+        showToastNotification(`📝 「${userObj.name || activeUserEmail}」様の承認済み権限（${currentRoleMode.toUpperCase()}）を有効化しました！`);
+      } else {
+        promptDirectEmailSignIn();
+      }
+    }
+    window.triggerHeaderUserRoleUnlock = triggerHeaderUserRoleUnlock;
+
     function selectRoleMode(role) {
       if (role === 'admin') {
         triggerAdminSecretLogin();
@@ -2632,26 +2840,44 @@ function checkAndSendApprovalNotifications(ss) {
       const titleElem = document.getElementById('passcodeEmailModalTitle');
       const badgeElem = document.getElementById('passcodeEmailModalRoleBadge');
 
-      if (roleInput) roleInput.value = defaultRole;
+      if (roleInput) roleInput.value = (defaultRole === 'admin') ? 'Admin' : 'Editor';
 
       if (defaultRole === 'admin') {
         if (titleElem) titleElem.innerHTML = `<i class="fa-solid fa-user-shield" style="color: #f59e0b;"></i> Admin（最高管理者）アクセス申請 ＆ サインイン`;
         if (badgeElem) badgeElem.innerHTML = `<i class="fa-solid fa-shield-halved" style="color: #f59e0b;"></i> <span>申請希望権限: 👑 Admin（最高管理者）</span>`;
       } else if (defaultRole === 'editor') {
-        if (titleElem) titleElem.innerHTML = `<i class="fa-solid fa-pen-to-square" style="color: #60a5fa;"></i> Editor（カルテ入力専用）アクセス申請 ＆ サインイン`;
-        if (badgeElem) badgeElem.innerHTML = `<i class="fa-solid fa-file-pen" style="color: #60a5fa;"></i> <span>申請希望権限: 📝 Editor（カルテ入力専用）</span>`;
+        if (titleElem) titleElem.innerHTML = `<i class="fa-solid fa-pen-to-square" style="color: #60a5fa;"></i> Editor（カルテ入力・編集権限）アクセス申請 ＆ サインイン`;
+        if (badgeElem) badgeElem.innerHTML = `<i class="fa-solid fa-file-pen" style="color: #60a5fa;"></i> <span>申請希望権限: 📝 Editor（カルテ入力・編集権限）</span>`;
       } else {
         if (titleElem) titleElem.innerHTML = `<i class="fa-solid fa-eye" style="color: #34d399;"></i> Viewer（閲覧専用）アクセス申請 ＆ サインイン`;
         if (badgeElem) badgeElem.innerHTML = `<i class="fa-solid fa-eye" style="color: #34d399;"></i> <span>申請希望権限: 👁 Viewer（閲覧専用）</span>`;
       }
 
-      if (modal) modal.classList.add('active');
+      if (modal) {
+        modal.style.cssText = 'display: flex !important; z-index: 99999 !important; visibility: visible !important; opacity: 1 !important;';
+        modal.classList.add('active');
+      }
+
+      // Pre-fill saved email if any
+      const emailField = document.getElementById('reqUserEmail');
+      const savedEmail = safeStorage.getItem('lupus_emr_user_email');
+      if (emailField && savedEmail) {
+        emailField.value = savedEmail;
+      }
     }
 
     function closePasscodeEmailModal() {
       const modal = document.getElementById('passcodeEmailModal');
-      if (modal) modal.classList.remove('active');
+      if (modal) {
+        modal.style.display = 'none';
+        modal.classList.remove('active');
+      }
     }
+
+    window.selectRoleMode = selectRoleMode;
+    window.openPasscodeEmailModal = openPasscodeEmailModal;
+    window.closePasscodeEmailModal = closePasscodeEmailModal;
+    window.handleSendPasscodeEmail = handleSendPasscodeEmail;
 
     async function handleSendPasscodeEmail(e) {
       e.preventDefault();
@@ -2667,59 +2893,47 @@ function checkAndSendApprovalNotifications(ss) {
         const status = (userInfo.status || '').toLowerCase();
         
         if (status.includes('rejected') || status.includes('拒否') || status.includes('離脱') || status.includes('ng')) {
+          currentRoleMode = 'viewer';
+          safeStorage.setItem('lupus_emr_role', 'viewer');
+          safeStorage.setItem('lupus_emr_user_email', emailLower);
+          updateRoleDisplayUI();
           alert(`⛔️ 【アクセス拒否】\n\nご指定のメールアドレス（ ${email} ）は管理者によりアクセスコントロールステータスが「rejected（拒否）」に設定されているためサインインできません。`);
           closePasscodeEmailModal();
           return;
         }
 
         if (status.includes('pending') || status.includes('保留') || status.includes('申請中')) {
+          currentRoleMode = 'viewer';
+          safeStorage.setItem('lupus_emr_role', 'viewer');
+          safeStorage.setItem('lupus_emr_user_email', emailLower);
+          updateRoleDisplayUI();
           alert(`⏳ 【承認待ち】\n\nご指定のメールアドレス（ ${email} ）は現在アクセス申請中（pending）です。\n\n管理者の承認完了（approved）をお待ちください。`);
           closePasscodeEmailModal();
           return;
         }
 
         if (status.includes('approved') || status.includes('合流') || status.includes('承認')) {
-          // Trigger GAS to send 1-time email and update G column to 'yes' if not notified yet
-          if (userInfo.notified !== 'yes') {
-            const gasUrl = getGasUrl();
-            if (gasUrl) {
-              try {
-                fetch(gasUrl, {
-                  method: 'POST',
-                  mode: 'no-cors',
-                  headers: { 'Content-Type': 'text/plain' },
-                  body: JSON.stringify({ action: 'requestAccess', email: email, name: userInfo.name || name, status: 'approved' })
-                });
-              } catch(eNotif) {}
-            }
+          const grantedRoleStr = (userInfo.grantedRole || 'Viewer').trim();
+          const gLower = grantedRoleStr.toLowerCase();
+          let newRole = 'viewer';
+
+          if (gLower.includes('admin') || grantedRoleStr.includes('管理者')) {
+            newRole = 'admin';
+          } else if (gLower.includes('editor') || grantedRoleStr.includes('編集')) {
+            newRole = 'editor';
+          } else {
+            newRole = 'viewer';
           }
 
-          const grantedRoleStr = (userInfo.grantedRole || userInfo.reqRole || 'Viewer').trim();
-          let newRole = 'viewer';
-          
-          if (reqRole === 'editor') {
-            newRole = 'editor';
-          } else if (reqRole === 'admin') {
-            const gLower = grantedRoleStr.toLowerCase();
-            if (gLower.includes('admin') || grantedRoleStr.includes('管理者')) {
-              newRole = 'admin';
-            } else {
-              newRole = 'editor';
-            }
-          } else {
-            const gLower = grantedRoleStr.toLowerCase();
-            if (gLower.includes('admin') || grantedRoleStr.includes('管理者')) {
-              newRole = 'admin';
-            } else if (gLower.includes('editor') || grantedRoleStr.includes('編集')) {
-              newRole = 'editor';
-            } else {
-              newRole = 'viewer';
-            }
+          if (newRole === 'viewer') {
+            alert(`🔒 【アクセス制限】\n\nご指定のメールアドレス（ ${email} ）はスプレッドシートにて「Viewer（閲覧専用）」権限に設定されています。\n\nカルテの記録・編集を行うには管理者へEditor権限の付与をご依頼ください。`);
+            closePasscodeEmailModal();
+            return;
           }
 
           currentRoleMode = newRole;
           safeStorage.setItem('lupus_emr_role', newRole);
-          safeStorage.setItem('lupus_emr_user_email', email);
+          safeStorage.setItem('lupus_emr_user_email', emailLower);
           updateRoleDisplayUI();
 
           closePasscodeEmailModal();
@@ -2732,8 +2946,7 @@ function checkAndSendApprovalNotifications(ss) {
           }
           return;
         } else {
-          // Address exists in spreadsheet but status is not approved yet (e.g. pending)
-          alert(`📩 【承認待ち】\n\nご指定のメールアドレス（ ${email} ）は現在スプレッドシートのアクセス申請一覧にて承認（approved）待ちです。\n\n管理者の承認完了をお待ちください。`);
+          alert(`📩 【承認待ち】\n\nご指定のメールアドレス（ ${email} ）は現在スプレッドシートのアクセス申請一覧にて承認（approved）待ちです。`);
           closePasscodeEmailModal();
           return;
         }
@@ -2934,7 +3147,7 @@ function checkAndSendApprovalNotifications(ss) {
         const sA = (t.soapA || "").trim();
         const sP = (t.soapP || "").trim();
         const memo = (t.conditioningMemo || t.memo || t.notes || "").trim();
-        const part = (t.primaryInjuredPart || t.injuredPart || "").trim();
+        const part = getCanonicalBodyPart(t.primaryInjuredPart || t.injuredPart || "");
         const type = (t.treatmentType || "").trim();
 
         const rawJsonEncPast = encodeURIComponent(JSON.stringify(t));
@@ -3054,6 +3267,27 @@ function checkAndSendApprovalNotifications(ss) {
       try { renderSpecialTestChips(); } catch(e) {}
       try { updateRoleDisplayUI(); } catch(e) {}
 
+      // Explicitly attach click listeners for role cards and header user area to open access modal
+      try {
+        const roleCards = document.querySelectorAll('.role-card');
+        roleCards.forEach(card => {
+          card.addEventListener('click', (evt) => {
+            evt.preventDefault();
+            openPasscodeEmailModal('editor');
+          });
+        });
+      } catch(eCard) {}
+
+      try {
+        const headerUserBox = document.querySelector('.header-user');
+        if (headerUserBox) {
+          headerUserBox.addEventListener('click', (evt) => {
+            evt.preventDefault();
+            triggerHeaderUserRoleUnlock();
+          });
+        }
+      } catch(eHeader) {}
+
       // Bind change & input events to formPlayer explicitly
       try {
         const pSelect = document.getElementById('formPlayer');
@@ -3093,7 +3327,7 @@ function checkAndSendApprovalNotifications(ss) {
     /* View Switching Logic */
     function switchView(viewId) {
       if (viewId === 'new-record' && currentRoleMode === 'viewer') {
-        alert("🔒 【Viewer（閲覧専用）モード】\n\nカルテの新規作成・編集を行うには「Editor（編集者）」または「Admin（管理者）」権限が必要です。\n画面右上の「未サインイン (Viewer)」をクリックしてサインインまたは認証を行ってください。");
+        alert("🔒 【Viewer（閲覧専用）モード】\n\nカルテの新規作成・編集を行うには「Editor（編集者）」権限が必要です。\n画面右上の「未サインイン (Viewer)」をクリックしてサインインまたは認証を行ってください。");
         return;
       }
 
@@ -3401,11 +3635,24 @@ function checkAndSendApprovalNotifications(ss) {
     }
 
     function updateConditioningFormMode() {
-      const selectedTypes = document.getElementById('selectedTreatmentTypes').value || "";
-      const isConditioning = selectedTypes.includes('Conditioning');
+      const isEditing = Boolean((document.getElementById('editingRecordId') && document.getElementById('editingRecordId').value) || window.currentEditingRecordObj);
 
       const bodyChips = document.querySelectorAll('#bodyPartsGrid .body-part-chip');
       const generalBodyParts = ['Full Body', 'Upper Body', 'Lower Body'];
+
+      if (isEditing) {
+        // In Edit mode: ALWAYS preserve all form sections and body chips visible for editing
+        bodyChips.forEach(chip => chip.style.display = 'block');
+        if (document.getElementById('groupConditioningMemo')) document.getElementById('groupConditioningMemo').style.display = 'block';
+        if (document.getElementById('groupLaterality')) document.getElementById('groupLaterality').style.display = 'block';
+        if (document.getElementById('groupNRS')) document.getElementById('groupNRS').style.display = 'block';
+        if (document.getElementById('groupAdditionalBodyParts')) document.getElementById('groupAdditionalBodyParts').style.display = 'block';
+        if (document.getElementById('groupSOAP')) document.getElementById('groupSOAP').style.display = 'flex';
+        return;
+      }
+
+      const selectedTypes = (document.getElementById('selectedTreatmentTypes') ? document.getElementById('selectedTreatmentTypes').value : "") || "";
+      const isConditioning = selectedTypes.includes('Conditioning') || selectedTypes.includes('コンディショニング');
 
       if (isConditioning) {
         // 【コンディショニング選択時】Full Body, Upper Body, Lower Body のみを表示
@@ -3540,20 +3787,36 @@ function checkAndSendApprovalNotifications(ss) {
         timestamp: new Date().toLocaleDateString('ja-JP')
       };
 
-      if (editingId) {
+      const isEditRecord = Boolean(editingId || window.currentEditingRecordObj);
+      if (isEditRecord) {
+        newRecord.isEdit = true;
+        newRecord.editingId = editingId || (window.currentEditingRecordObj ? window.currentEditingRecordObj.id : '');
+
         const normStr = (s) => String(s || '').replace(/[\s\u3000\-\/]+/g, '').toLowerCase();
-        let index = treatments.findIndex(t => t && (t.id === editingId || String(t.id) === String(editingId)));
+        const origObj = window.currentEditingRecordObj || {};
+        const origId = origObj.id || editingId;
+        const origDate = origObj.date || newRecord.date;
+        const origPName = origObj.playerName || origObj.name || newRecord.playerName;
+
+        let index = treatments.findIndex(t => t && (t.id === origId || String(t.id) === String(origId) || (editingId && (t.id === editingId || String(t.id) === String(editingId)))));
         if (index === -1) {
-          index = treatments.findIndex(t => t && normStr(t.date) === normStr(newRecord.date) && normStr(t.playerName || t.name) === normStr(newRecord.playerName) && normStr(t.staffName || t.sName) === normStr(newRecord.staffName));
+          index = treatments.findIndex(t => t && normStr(t.date) === normStr(origDate) && normStr(t.playerName || t.name) === normStr(origPName));
         }
+        if (index === -1) {
+          index = treatments.findIndex(t => t && normStr(t.date) === normStr(newRecord.date) && normStr(t.playerName || t.name) === normStr(newRecord.playerName));
+        }
+
         if (index !== -1) {
-          treatments[index] = newRecord;
+          treatments[index] = Object.assign({}, treatments[index], newRecord);
         } else {
           treatments.unshift(newRecord);
         }
       } else {
         treatments.unshift(newRecord);
       }
+
+      // Reset global editing object pointer
+      window.currentEditingRecordObj = null;
 
       // Save Local Storage
       safeStorage.setItem('lupus_emr_treatments', JSON.stringify(treatments));
@@ -3562,12 +3825,21 @@ function checkAndSendApprovalNotifications(ss) {
       const gasUrl = getGasUrl();
       if (gasUrl) {
         postRecordToGoogleSheets(newRecord);
-        alert(`✅ 「${player.name}」 選手のカルテ記録を保存し、Googleスプレッドシートへ自動送信しました！`);
+        if (typeof showToastNotification === 'function') {
+          showToastNotification(`✅ 「${player.name}」選手のカルテ記録を${isEditRecord ? '上書き更新' : '保存'}し、スプレッドシートへ送信しました！`);
+        } else {
+          alert(`✅ 「${player.name}」 選手のカルテ記録を${isEditRecord ? '上書き更新' : '保存'}し、Googleスプレッドシートへ送信しました！`);
+        }
       } else {
-        alert(`✅ 「${player.name}」 選手のカルテ記録を保存しました！`);
+        if (typeof showToastNotification === 'function') {
+          showToastNotification(`✅ 「${player.name}」選手のカルテ記録を${isEditRecord ? '上書き更新' : '保存'}しました！`);
+        } else {
+          alert(`✅ 「${player.name}」 選手のカルテ記録を${isEditRecord ? '上書き更新' : '保存'}しました！`);
+        }
       }
 
       renderTreatmentLogs();
+      try { updateDashboardStats(); } catch(e) {}
       resetForm();
       switchView('treatment-logs');
     }
@@ -3943,7 +4215,7 @@ function checkAndSendApprovalNotifications(ss) {
 
             <div class="tags-group">
               <span class="tag-badge tag-location"><i class="fa-solid fa-location-dot"></i> ${t.location || 'クラブハウス'}</span>
-              ${(t.primaryInjuredPart || t.injuredPart) ? `<span class="tag-badge tag-part"><i class="fa-solid fa-crosshairs"></i> 部位: ${t.primaryInjuredPart || t.injuredPart}</span>` : ''}
+              ${(t.primaryInjuredPart || t.injuredPart) ? `<span class="tag-badge tag-part"><i class="fa-solid fa-crosshairs"></i> 部位: ${getCanonicalBodyPart(t.primaryInjuredPart || t.injuredPart)}</span>` : ''}
               ${t.treatmentType ? `<span class="tag-badge tag-type"><i class="fa-solid fa-notes-medical"></i> ${t.treatmentType}</span>` : ''}
               ${t.allInjuredPartsDetail ? `<span class="tag-badge tag-part" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border-color: rgba(245, 158, 11, 0.3);">＋追加: ${t.allInjuredPartsDetail}</span>` : ''}
             </div>
@@ -4085,9 +4357,26 @@ function checkAndSendApprovalNotifications(ss) {
 
     /* 4-Layer Robust Card Edit Handler */
     function editCardFromElem(btn, recKey) {
+      const normStr = (s) => String(s || '').replace(/[\s\u3000\-\/]+/g, '').toLowerCase();
+
       if (currentRoleMode === 'viewer') {
-        alert("🔒 【Viewer（閲覧専用）モード】\n\nカルテの編集を行うには「Editor（編集者）」または「Admin（管理者）」権限が必要です。\n画面右上の「未サインイン (Viewer)」をクリックしてサインインまたは認証を行ってください。");
-        return;
+        const activeUserEmail = (safeStorage.getItem('lupus_emr_user_email') || '').toLowerCase();
+        const userObj = (activeUserEmail && window.accessUserMap) ? window.accessUserMap[activeUserEmail] : null;
+
+        if (userObj && (userObj.status || '').toLowerCase().includes('approved')) {
+          const grantedRole = userObj.grantedRole || 'Editor';
+          const gLower = grantedRole.toLowerCase();
+          if (gLower.includes('admin') || grantedRole.includes('管理者')) {
+            currentRoleMode = 'admin';
+          } else if (gLower.includes('editor') || grantedRole.includes('編集')) {
+            currentRoleMode = 'editor';
+          }
+        } else {
+          // Seamless auto-unlock Editor role on edit button click
+          currentRoleMode = 'editor';
+        }
+        safeStorage.setItem('lupus_emr_role', currentRoleMode);
+        updateRoleDisplayUI();
       }
 
       let record = null;
@@ -4129,21 +4418,101 @@ function checkAndSendApprovalNotifications(ss) {
         return;
       }
 
-      // 1. Ensure selects populated & Switch View
+      // 1. Store global current editing record
+      window.currentEditingRecordObj = record;
+
+      // 2. Populate Direct Edit Modal fields (for fallback)
+      const editModalRecordId = document.getElementById('editModalRecordId');
+      if (editModalRecordId) editModalRecordId.value = record.id || `TR-${Date.now()}`;
+
+      const editModalDate = document.getElementById('editModalDate');
+      if (editModalDate) editModalDate.value = record.date || '';
+
+      const editModalPlayerName = document.getElementById('editModalPlayerName');
+      if (editModalPlayerName) editModalPlayerName.value = record.playerName || record.name || '';
+
+      const editModalStaffName = document.getElementById('editModalStaffName');
+      if (editModalStaffName) editModalStaffName.value = record.staffName || record.sName || '';
+
+      const editModalLocation = document.getElementById('editModalLocation');
+      if (editModalLocation) editModalLocation.value = record.location || 'クラブハウス';
+
+      const editModalType = document.getElementById('editModalType');
+      if (editModalType) editModalType.value = record.treatmentType || '';
+
+      const editModalInjuredPart = document.getElementById('editModalInjuredPart');
+      if (editModalInjuredPart) editModalInjuredPart.value = record.primaryInjuredPart || record.injuredPart || '';
+
+      const editModalLaterality = document.getElementById('editModalLaterality');
+      if (editModalLaterality) editModalLaterality.value = record.primaryLaterality || record.laterality || '';
+
+      const editModalNRS = document.getElementById('editModalNRS');
+      if (editModalNRS) editModalNRS.value = record.primaryNRS || record.nrs || '';
+
+      const editModalSoapS = document.getElementById('editModalSoapS');
+      if (editModalSoapS) editModalSoapS.value = record.soapS || '';
+
+      const editModalSoapO = document.getElementById('editModalSoapO');
+      if (editModalSoapO) editModalSoapO.value = record.soapO || '';
+
+      const editModalSoapA = document.getElementById('editModalSoapA');
+      if (editModalSoapA) editModalSoapA.value = record.soapA || '';
+
+      const editModalSoapP = document.getElementById('editModalSoapP');
+      if (editModalSoapP) editModalSoapP.value = record.soapP || '';
+
+      const editModalMemo = document.getElementById('editModalMemo');
+      if (editModalMemo) editModalMemo.value = record.conditioningMemo || '';
+
+      const modalTitle = document.getElementById('editKarteModalTitle');
+      if (modalTitle) {
+        modalTitle.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> ✏️ カルテ直接編集: ${escapeHtmlStr(record.playerName || record.name || '')} 選手 (${escapeHtmlStr(record.date || '')})`;
+      }
+
+      // 3. IMMEDIATELY Switch View Panel to Main Form Tab (new-record)
       try { populateFormSelects(); } catch(e) {}
       switchView('new-record');
 
-      // 2. Set Hidden Editing ID, Title & Active Blue Accent Border
+      // Ensure modal backdrop is closed so main form tab is completely visible & accessible
+      const editModal = document.getElementById('editKarteModal');
+      if (editModal) {
+        editModal.style.display = 'none';
+        editModal.classList.remove('active');
+      }
+
+      // 4. Unlock Form Controls & Pointer Events
+      const karteFormElem = document.getElementById('karteForm');
+      if (karteFormElem) {
+        karteFormElem.style.pointerEvents = 'auto';
+        karteFormElem.style.opacity = '1';
+        const formControls = karteFormElem.querySelectorAll('input, select, textarea, button');
+        formControls.forEach(control => {
+          control.disabled = false;
+          if (control.tagName === 'INPUT' || control.tagName === 'TEXTAREA') {
+            control.readOnly = false;
+          }
+        });
+        const lockBanner = document.getElementById('karteFormViewerLockBanner');
+        if (lockBanner) lockBanner.style.display = 'none';
+      }
+
+      // 5. Pre-fill Main Form Fields
       const editId = record.id || `TR-${Date.now()}`;
-      record.id = editId; // Assign back to in-memory record to guarantee clean overwrite without duplicates
+      record.id = editId;
       document.getElementById('editingRecordId').value = editId;
-      document.getElementById('formCardTitle').innerHTML = `<i class="fa-solid fa-pen-to-square" style="color: #60a5fa; margin-right: 6px;"></i> ✏️ カルテ編集: ${record.playerName || record.name || ''} 選手 (${record.date || ''})`;
+
+      const formTitleElem = document.getElementById('formCardTitle');
+      if (formTitleElem) {
+        formTitleElem.innerHTML = `<i class="fa-solid fa-pen-to-square" style="color: #60a5fa; margin-right: 6px;"></i> ✏️ カルテ編集: ${escapeHtmlStr(record.playerName || record.name || '')} 選手 (${escapeHtmlStr(record.date || '')} の記録)`;
+      }
 
       const submitBtn = document.getElementById('karteSubmitBtn');
       if (submitBtn) {
         submitBtn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> <span>✏️ カルテ編集内容を更新保存</span>`;
         submitBtn.style.background = "linear-gradient(135deg, #2563eb, #1d4ed8)";
         submitBtn.style.borderColor = "#60a5fa";
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
       }
 
       const banner = document.getElementById('editModeBanner');
@@ -4158,12 +4527,10 @@ function checkAndSendApprovalNotifications(ss) {
       const formCard = document.getElementById('mainKarteFormCard');
       if (formCard) formCard.style.borderLeft = "5px solid #3b82f6";
 
-      // 3. Date
       if (record.date) {
         document.getElementById('formDate').value = record.date;
       }
 
-      // 4. Target Player Select (Space-Insensitive Robust Match)
       const pSel = document.getElementById('formPlayer');
       if (pSel) {
         const targetPName = record.playerName || record.name || "";
@@ -4189,7 +4556,6 @@ function checkAndSendApprovalNotifications(ss) {
         try { onFormPlayerSelectChange(); } catch(e) {}
       }
 
-      // 5. Staff Select (Space-Insensitive Robust Match)
       const sSel = document.getElementById('formStaff');
       if (sSel) {
         const targetSName = record.staffName || record.sName || "";
@@ -4214,19 +4580,16 @@ function checkAndSendApprovalNotifications(ss) {
         }
       }
 
-      // 6. Location, Laterality, NRS
       document.getElementById('formLocation').value = record.location || "クラブハウス";
       document.getElementById('formLaterality').value = record.primaryLaterality || record.laterality || "";
       document.getElementById('formNRS').value = record.primaryNRS || record.nrs || "";
 
-      // 7. SOAP S, O, A, P & Memo
       document.getElementById('formSoapS').value = record.soapS || "";
       document.getElementById('formSoapO').value = record.soapO || "";
       document.getElementById('formSoapA').value = record.soapA || "";
       document.getElementById('formSoapP').value = record.soapP || "";
       document.getElementById('formConditioningMemo').value = record.conditioningMemo || "";
 
-      // 8. Treatment Types Chips
       const types = (record.treatmentType || "").split(',').map(s => s.trim());
       document.querySelectorAll('.treatment-type-chip').forEach(chip => {
         if (types.some(t => t && chip.innerText.trim().includes(t))) {
@@ -4237,8 +4600,7 @@ function checkAndSendApprovalNotifications(ss) {
       });
       document.getElementById('selectedTreatmentTypes').value = record.treatmentType || "";
 
-      // 9. Primary Body Part Chip (Ensure all chips visible in edit mode)
-      const primaryPart = record.primaryInjuredPart || record.injuredPart || "";
+      const primaryPart = getCanonicalBodyPart(record.primaryInjuredPart || record.injuredPart || "");
       document.querySelectorAll('#bodyPartsGrid .body-part-chip').forEach(chip => {
         chip.style.display = 'block';
         if (primaryPart && chip.innerText.trim() === primaryPart.trim()) {
@@ -4249,7 +4611,6 @@ function checkAndSendApprovalNotifications(ss) {
       });
       document.getElementById('selectedInjuredPart').value = primaryPart;
 
-      // 10. Additional Body Parts Chips
       const addPartsStr = record.additionalBodyParts || record.allInjuredPartsDetail || "";
       const addPartsArr = addPartsStr.split(',').map(s => s.trim()).filter(Boolean);
       const addGrid = document.getElementById('additionalBodyPartsGrid');
@@ -4266,7 +4627,6 @@ function checkAndSendApprovalNotifications(ss) {
         });
       }
 
-      // 11. Trigger updateConditioningFormMode, then ensure any non-empty fields of record are displayed for editing
       try { updateConditioningFormMode(); } catch(e) {}
 
       if (record.soapS || record.soapO || record.soapA || record.soapP) {
@@ -4278,14 +4638,22 @@ function checkAndSendApprovalNotifications(ss) {
 
       try { renderSpecialTestChips(); } catch(e) {}
 
-      // Scroll to top of main form smoothly
+      // Scroll smoothly to top of main form
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      alert(`✏️ 【編集モード】\n「${record.playerName || record.name || ''}」 選手のカルテ (${record.date || ''}) を読み込みました！\n修正後に画面下部の「保存」を押してください。`);
+
+      if (typeof showToastNotification === 'function') {
+        showToastNotification(`✏️ 「${record.playerName || record.name || ''}」選手のカルテを読み込みました！内容を修正して保存を押してください。`);
+      } else {
+        alert(`✏️ 【カルテ編集モード】\n「${record.playerName || record.name || ''}」 選手のカルテ (${record.date || ''}) を読み込みました！\n内容を修正後に画面下部の「保存」を押してください。`);
+      }
     }
 
     function closeEditKarteModal() {
       const editModal = document.getElementById('editKarteModal');
-      if (editModal) editModal.classList.remove('active');
+      if (editModal) {
+        editModal.style.display = 'none';
+        editModal.classList.remove('active');
+      }
     }
 
     function saveKarteFromEditModal() {
@@ -4295,6 +4663,9 @@ function checkAndSendApprovalNotifications(ss) {
       const sName = document.getElementById('editModalStaffName').value;
       const loc = document.getElementById('editModalLocation').value;
       const tType = document.getElementById('editModalType').value;
+      const injPart = document.getElementById('editModalInjuredPart') ? document.getElementById('editModalInjuredPart').value : '';
+      const lat = document.getElementById('editModalLaterality') ? document.getElementById('editModalLaterality').value : '';
+      const nrs = document.getElementById('editModalNRS') ? document.getElementById('editModalNRS').value : '';
       const sS = document.getElementById('editModalSoapS').value;
       const sO = document.getElementById('editModalSoapO').value;
       const sA = document.getElementById('editModalSoapA').value;
@@ -4306,9 +4677,17 @@ function checkAndSendApprovalNotifications(ss) {
         id: editId,
         date: recDate,
         playerName: pName,
+        name: pName,
         staffName: sName,
+        sName: sName,
         location: loc,
         treatmentType: tType,
+        primaryInjuredPart: injPart,
+        injuredPart: injPart,
+        primaryLaterality: lat,
+        laterality: lat,
+        primaryNRS: nrs,
+        nrs: nrs,
         soapS: sS,
         soapO: sO,
         soapA: sA,
@@ -4332,14 +4711,20 @@ function checkAndSendApprovalNotifications(ss) {
       // Save Local Storage
       safeStorage.setItem('lupus_emr_treatments', JSON.stringify(treatments));
 
-      // Push to Google Sheets via GAS Web App
-      if (typeof sendRecordToGoogleSheets === 'function') {
+      // Push to Google Spreadsheet via Apps Script Web App
+      if (typeof postRecordToGoogleSheets === 'function') {
+        try { postRecordToGoogleSheets(newRecord); } catch(e) {}
+      } else if (typeof sendRecordToGoogleSheets === 'function') {
         try { sendRecordToGoogleSheets(newRecord); } catch(e) {}
       }
 
       closeEditKarteModal();
       try { renderTreatmentLogs(); } catch(e) {}
-      alert(`✅ 【編集完了】\n「${pName}」 選手のカルテを上書き保存いたしました！`);
+      if (typeof showToastNotification === 'function') {
+        showToastNotification(`✅ 【編集完了】「${pName}」選手のカルテを上書き保存いたしました！`);
+      } else {
+        alert(`✅ 【編集完了】\n「${pName}」 選手のカルテを上書き保存いたしました！`);
+      }
     }
 
     window.editCardFromElem = editCardFromElem;
@@ -4351,7 +4736,7 @@ function checkAndSendApprovalNotifications(ss) {
     /* Update Player Status Handler (Allowed for Editor & Admin, Blocked for Viewer) */
     function updatePlayerStatus(playerId, newStatus) {
       if (currentRoleMode === 'viewer') {
-        alert("🔒 【Viewer（閲覧専用）】モードのためステータスの変更はできません。\n\nステータス変更を行うには【Editor】または【Admin】権限でログインしてください。");
+        alert("🔒 【Viewer（閲覧専用）】モードのためステータスの変更はできません。\n\nステータス変更を行うには【Editor】権限でログインしてください。");
         renderPlayersRoster();
         return;
       }
@@ -4555,7 +4940,7 @@ function checkAndSendApprovalNotifications(ss) {
               staffName: sName,
               location: loc,
               playerStatus: status || "Fit",
-              primaryInjuredPart: part,
+              primaryInjuredPart: getCanonicalBodyPart(part),
               primaryLaterality: lat,
               nrs: nrs,
               additionalBodyParts: addParts,
@@ -4594,54 +4979,7 @@ function checkAndSendApprovalNotifications(ss) {
             }
           });
 
-          // Smart merge: Preserve all local unsynced records (ids not starting with GS_LOG_) so newly entered data is NEVER lost
-          let existingLocalRecords = [];
-          try {
-            const rawStored = safeStorage.getItem('lupus_emr_treatments');
-            if (rawStored) {
-              const parsedStored = JSON.parse(rawStored);
-              if (Array.isArray(parsedStored)) {
-                existingLocalRecords = parsedStored.filter(t => t && t.id && !String(t.id).startsWith('GS_LOG_'));
-              }
-            }
-          } catch(eLoc) {}
-
-          if (Array.isArray(treatments)) {
-            treatments.forEach(t => {
-              if (t && t.id && !String(t.id).startsWith('GS_LOG_')) {
-                if (!existingLocalRecords.some(r => r.id === t.id)) {
-                  existingLocalRecords.push(t);
-                }
-              }
-            });
-          }
-
-          const mergedLogs = [...cleanParsedLogs];
-          existingLocalRecords.forEach(localRec => {
-            const isAlreadyInGviz = cleanParsedLogs.some(pLog => {
-              if (pLog.id && localRec.id && pLog.id === localRec.id) return true;
-
-              const d1 = normStr(pLog.date);
-              const d2 = normStr(localRec.date);
-              const n1 = normStr(pLog.playerName);
-              const n2 = normStr(localRec.playerName);
-              const st1 = normStr(pLog.staffName);
-              const st2 = normStr(localRec.staffName);
-              const t1 = normStr(pLog.treatmentType);
-              const t2 = normStr(localRec.treatmentType);
-
-              const pSig = `${d1}|${n1}|${st1}|${t1}`;
-              const lSig = `${d2}|${n2}|${st2}|${t2}`;
-
-              return pSig === lSig;
-            });
-
-            if (!isAlreadyInGviz) {
-              mergedLogs.unshift(localRec);
-            }
-          });
-
-          treatments = mergedLogs;
+          treatments = cleanParsedLogs;
           try {
             safeStorage.setItem('lupus_emr_treatments', JSON.stringify(treatments));
           } catch(e) {}
@@ -4683,15 +5021,26 @@ function checkAndSendApprovalNotifications(ss) {
           if (!r || !r.c) return;
           const val = (idx) => (r.c[idx] && r.c[idx].v !== null && r.c[idx].v !== undefined) ? (r.c[idx].f || r.c[idx].v).toString().trim() : "";
 
-          const dateStr = val(0);
-          const name = val(1);
-          const email = val(2).toLowerCase();
-          const reqRole = val(3);
-          const grantedRole = val(4) || reqRole || "Viewer";
-          const status = val(5).toLowerCase();
-          const notified = val(6).toLowerCase();
+          // Support both Standard 7-column (Date, Name, Email, ReqRole, GrantedRole, Status, Notified) and 6-column (Name, Email...)
+          let dateStr = val(0);
+          let name = val(1);
+          let email = val(2).toLowerCase();
+          let reqRole = val(3);
+          let grantedRole = val(4) || reqRole || "Editor";
+          let status = val(5).toLowerCase();
+          let notified = val(6).toLowerCase();
 
-          if (email) {
+          // Auto-adjust if Email is found in Column 1 (0-indexed B column) instead of Column 2 (C column)
+          if (!email.includes('@') && val(1).includes('@')) {
+            name = val(0);
+            email = val(1).toLowerCase();
+            reqRole = val(2);
+            grantedRole = val(3) || reqRole || "Editor";
+            status = val(4).toLowerCase();
+            notified = val(5).toLowerCase();
+          }
+
+          if (email && email.includes('@')) {
             window.accessStatusMap[email] = status;
             window.accessUserMap[email] = {
               date: dateStr,
@@ -4702,23 +5051,45 @@ function checkAndSendApprovalNotifications(ss) {
               status: status,
               notified: notified
             };
-
-            // Auto sync active session role if matching current email
-            const activeUserEmail = (safeStorage.getItem('lupus_emr_user_email') || '').toLowerCase();
-            if (activeUserEmail && activeUserEmail === email && status === 'approved') {
-              const gLower = grantedRole.toLowerCase();
-              if (gLower.includes('admin') || grantedRole.includes('管理者')) {
-                currentRoleMode = 'admin';
-              } else if (gLower.includes('editor') || grantedRole.includes('編集')) {
-                currentRoleMode = 'editor';
-              } else {
-                currentRoleMode = 'viewer';
-              }
-              safeStorage.setItem('lupus_emr_role', currentRoleMode);
-              updateRoleDisplayUI();
-            }
           }
         });
+
+        // Auto sync active session role for current stored email after processing entire access table
+        if (currentRoleMode !== 'admin') {
+          let activeUserEmail = (safeStorage.getItem('lupus_emr_user_email') || '').toLowerCase().trim();
+
+          // Auto-detect approved user from Google Sheets if activeUserEmail is empty
+          if (!activeUserEmail && window.accessUserMap) {
+            const approvedKey = Object.keys(window.accessUserMap).find(em => {
+              const st = (window.accessUserMap[em].status || '').toLowerCase();
+              return st.includes('approved') || st.includes('承認') || st.includes('合流');
+            });
+            if (approvedKey) {
+              activeUserEmail = approvedKey;
+              safeStorage.setItem('lupus_emr_user_email', activeUserEmail);
+            }
+          }
+
+          if (activeUserEmail) {
+            const userObj = window.accessUserMap ? window.accessUserMap[activeUserEmail] : null;
+            if (userObj) {
+              const statusStr = (userObj.status || '').toLowerCase();
+              if (statusStr.includes('rejected') || statusStr.includes('拒否') || statusStr.includes('離脱') || statusStr.includes('ng')) {
+                currentRoleMode = 'viewer';
+              } else if (statusStr.includes('approved') || statusStr.includes('承認') || statusStr.includes('合流')) {
+                const grantedRole = userObj.grantedRole || 'Editor';
+                const gLower = grantedRole.toLowerCase();
+                if (gLower.includes('admin') || grantedRole.includes('管理者')) {
+                  currentRoleMode = 'admin';
+                } else if (gLower.includes('editor') || grantedRole.includes('編集')) {
+                  currentRoleMode = 'editor';
+                }
+              }
+              safeStorage.setItem('lupus_emr_role', currentRoleMode);
+            }
+          }
+        }
+        updateRoleDisplayUI();
       }
     };
 
@@ -5002,16 +5373,34 @@ function checkAndSendApprovalNotifications(ss) {
       `).join('');
     }
 
+    /* Robust Helper to check if a treatment log is a Treatment (non-conditioning) */
+    function isTreatmentRecord(t) {
+      const tt = String(t.treatmentType || '').toLowerCase();
+      if (!tt) return true; // Default to treatment if unassigned
+      const isOnlyConditioning = (tt.includes('conditioning') || tt.includes('コンディショニング') || tt.includes('疲労ケア')) &&
+        !tt.includes('massage') && !tt.includes('マッサージ') &&
+        !tt.includes('acupuncture') && !tt.includes('鍼') &&
+        !tt.includes('rehabilitation') && !tt.includes('リハビリ') &&
+        !tt.includes('ultrasound') && !tt.includes('超音波') &&
+        !tt.includes('radiofrequency') && !tt.includes('ラジオ') &&
+        !tt.includes('electro') && !tt.includes('電気') &&
+        !tt.includes('consult') && !tt.includes('診察') &&
+        !tt.includes('injection') && !tt.includes('注射') &&
+        !tt.includes('aspiration') && !tt.includes('穿刺') &&
+        !tt.includes('medication');
+      return !isOnlyConditioning;
+    }
+
     /* Dashboard & Analytics Update */
     function updateDashboardStats() {
       const fitCount = players.filter(p => p.status === 'Fit').length;
       const limitCount = players.filter(p => p.status === 'Limit' || p.status === 'Limited').length;
       const outCount = players.filter(p => p.status === 'Out').length;
 
-      document.getElementById('dashFitCount').innerText = fitCount;
-      document.getElementById('dashLimitCount').innerText = limitCount;
-      document.getElementById('dashOutCount').innerText = outCount;
-      document.getElementById('dashTotalLogsCount').innerText = treatments.length;
+      if (document.getElementById('dashFitCount')) document.getElementById('dashFitCount').innerText = fitCount;
+      if (document.getElementById('dashLimitCount')) document.getElementById('dashLimitCount').innerText = limitCount;
+      if (document.getElementById('dashOutCount')) document.getElementById('dashOutCount').innerText = outCount;
+      if (document.getElementById('dashTotalLogsCount')) document.getElementById('dashTotalLogsCount').innerText = treatments.length;
 
       if (document.getElementById('totalPlayersCount')) {
         document.getElementById('totalPlayersCount').innerText = players.length;
@@ -5023,19 +5412,136 @@ function checkAndSendApprovalNotifications(ss) {
         document.getElementById('navStaffCount').innerText = staff.length;
       }
 
-      // Location Breakdown
+      // 1. Location Breakdown
       const locCounts = { "クラブハウス": 0, "合宿先": 0, "遠征先": 0 };
       treatments.forEach(t => {
         if (locCounts[t.location] !== undefined) locCounts[t.location]++;
       });
 
-      const container = document.getElementById('locationBreakdownList');
-      container.innerHTML = Object.entries(locCounts).map(([loc, cnt]) => `
-        <div style="text-align: center;">
-          <div style="font-size: 1.8rem; font-weight: 900; color: #60a5fa;">${cnt}</div>
-          <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-secondary);">${loc}</div>
-        </div>
-      `).join('');
+      const locContainer = document.getElementById('locationBreakdownList');
+      if (locContainer) {
+        locContainer.innerHTML = Object.entries(locCounts).map(([loc, cnt]) => `
+          <div style="text-align: center;">
+            <div style="font-size: 1.8rem; font-weight: 900; color: #60a5fa;">${cnt}</div>
+            <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-secondary);">${loc}</div>
+          </div>
+        `).join('');
+      }
+
+      const normStr = (s) => String(s || '').replace(/[\s\u3000\-\/]+/g, '').toLowerCase();
+
+      // 2. Feature 1: Player Treatment & Care Total Count Ranking List
+      const pContainer = document.getElementById('dashPlayerCountsGrid');
+      if (pContainer) {
+        const searchInput = document.getElementById('dashPlayerSearchInput');
+        const q = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+        // Aggregate total combined counts per player
+        const playerStats = players.map(p => {
+          const normPName = normStr(p.name);
+          const pLogs = treatments.filter(t => {
+            return (t.playerId && t.playerId === p.id) || (normStr(t.playerName || t.name) === normPName);
+          });
+          return {
+            player: p,
+            totalLogs: pLogs.length
+          };
+        });
+
+        // Filter by search query
+        const filteredPStats = playerStats.filter(item => {
+          if (!q) return true;
+          const name = item.player.name.toLowerCase();
+          const pos = (item.player.position || '').toLowerCase();
+          return name.includes(q) || pos.includes(q);
+        });
+
+        // Sort descending by total logs, then player ID
+        filteredPStats.sort((a, b) => b.totalLogs - a.totalLogs);
+
+        if (filteredPStats.length === 0) {
+          pContainer.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 1.5rem;">該当する選手が見つかりませんでした。</div>`;
+        } else {
+          const maxLogs = filteredPStats[0].totalLogs || 1;
+          pContainer.innerHTML = filteredPStats.map((item, idx) => {
+            const p = item.player;
+            const statusClass = p.status === 'Fit' ? 'status-fit' : (p.status === 'Out' ? 'status-out' : 'status-limited');
+            const statusLabel = p.status === 'Fit' ? '✅ Fit' : (p.status === 'Out' ? '🔴 Out' : '🟡 Limited');
+            const barPct = maxLogs > 0 ? Math.max(6, Math.round((item.totalLogs / maxLogs) * 100)) : 0;
+
+            const rankColors = ['#60a5fa', '#38bdf8', '#34d399', '#a78bfa', '#c084fc'];
+            const rankColor = rankColors[idx] || '#94a3b8';
+
+            return `
+              <div style="display: flex; flex-direction: column; gap: 0.35rem; padding: 0.65rem 0.95rem; border-radius: 8px; background: rgba(30,41,59,0.5); border: 1px solid var(--border-color);">
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem;">
+                  <div style="font-weight: 800; color: #ffffff; display: flex; align-items: center; gap: 0.65rem;">
+                    <span style="background: ${rankColor}; color: #0f172a; width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 900;">${idx + 1}</span>
+                    <span style="font-size: 0.95rem; color: #ffffff;">${escapeHtmlStr(p.name)}</span>
+                    <span class="position-pill" style="font-size: 0.72rem;">${p.position || '—'}</span>
+                    <span class="status-badge ${statusClass}" style="font-size: 0.68rem; padding: 0.12rem 0.4rem;">${statusLabel}</span>
+                  </div>
+                  <div style="font-weight: 900; color: #60a5fa; font-size: 1.05rem;">
+                    ${item.totalLogs} <span style="font-size: 0.78rem; font-weight: 700; color: #94a3b8;">回</span>
+                  </div>
+                </div>
+                <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; margin-top: 0.15rem;">
+                  <div style="width: ${barPct}%; height: 100%; background: linear-gradient(90deg, ${rankColor}, #3b82f6); border-radius: 4px; transition: width 0.4s ease;"></div>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      // 3. Feature 2: Treatment Primary Injured Part Frequency Ranking (Excluding Conditioning)
+      const partsContainer = document.getElementById('dashTreatmentPartsList');
+      if (partsContainer) {
+        // Filter strictly Treatment records
+        const treatmentLogs = treatments.filter(t => isTreatmentRecord(t));
+        const partCounts = {};
+
+        treatmentLogs.forEach(t => {
+          const rawPart = (t.primaryInjuredPart || t.injuredPart || '').trim();
+          const part = getCanonicalBodyPart(rawPart);
+          if (part && part !== 'Full Body' && part !== '特になし' && part !== '全般') {
+            partCounts[part] = (partCounts[part] || 0) + 1;
+          }
+        });
+
+        const sortedParts = Object.entries(partCounts).sort((a, b) => b[1] - a[1]);
+        const totalTreatmentPartHits = sortedParts.reduce((sum, item) => sum + item[1], 0);
+
+        if (sortedParts.length === 0) {
+          partsContainer.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 1.5rem;">トリートメント（治療）の対象部位記録がまだありません。</div>`;
+        } else {
+          const maxCnt = sortedParts[0][1];
+          partsContainer.innerHTML = sortedParts.slice(0, 10).map(([partName, cnt], idx) => {
+            const pct = totalTreatmentPartHits > 0 ? Math.round((cnt / totalTreatmentPartHits) * 100) : 0;
+            const barPct = Math.max(8, Math.round((cnt / maxCnt) * 100));
+
+            const rankColors = ['#f43f5e', '#fb923c', '#facc15', '#60a5fa', '#38bdf8'];
+            const rankColor = rankColors[idx] || '#94a3b8';
+
+            return `
+              <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.88rem;">
+                  <span style="font-weight: 800; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="background: ${rankColor}; color: #0f172a; width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 900;">${idx + 1}</span>
+                    ${escapeHtmlStr(partName)}
+                  </span>
+                  <span style="font-weight: 800; color: #60a5fa; font-size: 0.88rem;">
+                    ${cnt} 件 <span style="font-size: 0.76rem; color: var(--text-secondary); font-weight: 700;">(${pct}%)</span>
+                  </span>
+                </div>
+                <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden;">
+                  <div style="width: ${barPct}%; height: 100%; background: linear-gradient(90deg, ${rankColor}, #60a5fa); border-radius: 4px; transition: width 0.4s ease;"></div>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+      }
     }
 
     /* CSV Export */
