@@ -1541,6 +1541,23 @@
               </div>
             </div>
 
+            <!-- Dashboard Feature: Trainer / Staff Treatment & Care Breakdown -->
+            <div class="col-12" style="margin-top: 1rem;">
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title">
+                    <i class="fa-solid fa-user-doctor" style="color: #38bdf8;"></i>
+                    <span>👨‍⚕️ トレーナー・スタッフ別 治療・ケア担当実績（件数・シェア割合）</span>
+                  </div>
+                </div>
+                <div class="card-body" style="padding: 1.25rem;">
+                  <div id="dashStaffCountsList" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <!-- Dynamically filled -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- Dashboard Feature 2: Treatment Primary Injured Part Frequency Ranking (Excluding Conditioning) -->
             <div class="col-12" style="margin-top: 1rem;">
               <div class="card">
@@ -1555,6 +1572,56 @@
                     <!-- Dynamically filled -->
                   </div>
                 </div>
+              </div>
+            <!-- Dashboard Feature 3: Status / FW-BK / Age Breakdown Analytics -->
+            <div class="col-12" style="margin-top: 1rem;">
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+                
+                <!-- Status Breakdown Card -->
+                <div class="card" style="height: 100%;">
+                  <div class="card-header">
+                    <div class="card-title">
+                      <i class="fa-solid fa-heart-pulse" style="color: #10b981;"></i>
+                      <span>🩺 コンディション別 治療割合</span>
+                    </div>
+                  </div>
+                  <div class="card-body" style="padding: 1.1rem;">
+                    <div id="dashStatusBreakdownList" style="display: flex; flex-direction: column; gap: 0.85rem;">
+                      <!-- Dynamically filled -->
+                    </div>
+                  </div>
+                </div>
+
+                <!-- FW vs BK Breakdown Card -->
+                <div class="card" style="height: 100%;">
+                  <div class="card-header">
+                    <div class="card-title">
+                      <i class="fa-solid fa-shield-halved" style="color: #3b82f6;"></i>
+                      <span>🏉 FW / BK別 治療割合</span>
+                    </div>
+                  </div>
+                  <div class="card-body" style="padding: 1.1rem;">
+                    <div id="dashCategoryBreakdownList" style="display: flex; flex-direction: column; gap: 0.85rem;">
+                      <!-- Dynamically filled -->
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Age Bracket Breakdown Card -->
+                <div class="card" style="height: 100%;">
+                  <div class="card-header">
+                    <div class="card-title">
+                      <i class="fa-solid fa-cake-candles" style="color: #f59e0b;"></i>
+                      <span>🎂 治療時年齢層別 割合</span>
+                    </div>
+                  </div>
+                  <div class="card-body" style="padding: 1.1rem;">
+                    <div id="dashAgeBreakdownList" style="display: flex; flex-direction: column; gap: 0.85rem;">
+                      <!-- Dynamically filled -->
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
 
@@ -5494,6 +5561,129 @@ function checkAndSendApprovalNotifications(ss) {
         }
       }
 
+      // Feature: Trainer / Staff Treatment & Care Breakdown
+      const staffContainer = document.getElementById('dashStaffCountsList');
+      if (staffContainer) {
+        const totalLogsCount = treatments.length;
+        const staffMap = {};
+
+        // Register master staff
+        staff.forEach(s => {
+          staffMap[normStr(s.name)] = {
+            id: s.id || '',
+            name: s.name,
+            role: s.role || 'AT',
+            totalLogs: 0,
+            logs: []
+          };
+        });
+
+        // Count logs per staff
+        treatments.forEach(t => {
+          const sName = (t.staffName || t.sName || '').trim();
+          if (!sName) return;
+          const normKey = normStr(sName);
+          if (!staffMap[normKey]) {
+            const matchedStaff = staff.find(s => (t.staffId && s.id === t.staffId) || normStr(s.name) === normKey);
+            staffMap[normKey] = {
+              id: matchedStaff ? matchedStaff.id : (t.staffId || ''),
+              name: matchedStaff ? matchedStaff.name : sName,
+              role: matchedStaff ? (matchedStaff.role || 'Staff') : 'Staff',
+              totalLogs: 0,
+              logs: []
+            };
+          }
+          staffMap[normKey].totalLogs++;
+          staffMap[normKey].logs.push(t);
+        });
+
+        // Filter: only show active staff with at least 1 record (exclude 0-count staff like unoperated Dr.)
+        const activeStaffStats = Object.values(staffMap).filter(item => item.totalLogs > 0);
+        activeStaffStats.sort((a, b) => b.totalLogs - a.totalLogs);
+
+        if (activeStaffStats.length === 0) {
+          staffContainer.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 1.5rem;">担当スタッフの治療記録がまだありません。</div>`;
+        } else {
+          const maxStaffLogs = activeStaffStats[0].totalLogs || 1;
+          const rankColors = ['#38bdf8', '#34d399', '#facc15', '#fb923c', '#a78bfa', '#c084fc', '#60a5fa'];
+
+          staffContainer.innerHTML = activeStaffStats.map((item, idx) => {
+            const pct = totalLogsCount > 0 ? ((item.totalLogs / totalLogsCount) * 100).toFixed(1) : "0.0";
+            const barPct = Math.max(6, Math.round((item.totalLogs / maxStaffLogs) * 100));
+            const rankColor = rankColors[idx] || '#94a3b8';
+
+            // Calculate Top 3 treated body parts or conditioning for this staff member
+            const partCounts = {};
+            item.logs.forEach(t => {
+              const isCond = !isTreatmentRecord(t);
+              const rawPart = (t.primaryInjuredPart || t.injuredPart || '').trim();
+              const canonPart = getCanonicalBodyPart(rawPart);
+
+              let category = '';
+              if (isCond || canonPart === 'Full Body' || !canonPart) {
+                category = 'コンディショニング';
+              } else {
+                category = canonPart;
+              }
+              partCounts[category] = (partCounts[category] || 0) + 1;
+            });
+
+            const sortedParts = Object.entries(partCounts).sort((a, b) => b[1] - a[1]);
+            const top3Parts = sortedParts.slice(0, 3);
+
+            const top3Html = top3Parts.length > 0 ? `
+              <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.35rem; font-size: 0.74rem;">
+                <span style="color: var(--text-muted); font-size: 0.70rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.25rem;">
+                  <i class="fa-solid fa-bullseye" style="font-size: 0.68rem; color: #60a5fa;"></i> 主要部位:
+                </span>
+                ${top3Parts.map(([pName, cnt], pIdx) => {
+                  const partPct = item.totalLogs > 0 ? ((cnt / item.totalLogs) * 100).toFixed(1) : "0.0";
+                  const pBadgeColors = [
+                    'rgba(56,189,248,0.12); color: #7dd3fc; border-color: rgba(56,189,248,0.25);',
+                    'rgba(52,211,153,0.12); color: #6ee7b7; border-color: rgba(52,211,153,0.25);',
+                    'rgba(250,204,21,0.12); color: #fde047; border-color: rgba(250,204,21,0.25);'
+                  ];
+                  const pColorStyle = pBadgeColors[pIdx] || 'rgba(148,163,184,0.12); color: #cbd5e1; border-color: rgba(148,163,184,0.25);';
+                  const rankLabels = ['1位', '2位', '3位'];
+                  return `
+                    <span style="background: ${pColorStyle} border: 1px solid; padding: 1.5px 7px; border-radius: 4px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.28rem;">
+                      <span style="font-size: 0.65rem; opacity: 0.85; font-weight: 800;">${rankLabels[pIdx]}</span>
+                      <span>${escapeHtmlStr(pName)}</span>
+                      <span style="color: #ffffff; font-weight: 800;">${partPct}%</span>
+                      <span style="font-size: 0.66rem; opacity: 0.75;">(${cnt}件)</span>
+                    </span>
+                  `;
+                }).join('')}
+              </div>
+            ` : '';
+
+            return `
+              <div style="display: flex; flex-direction: column; gap: 0.35rem; padding: 0.65rem 0.95rem; border-radius: 8px; background: rgba(30,41,59,0.5); border: 1px solid var(--border-color);">
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem;">
+                  <div style="font-weight: 800; color: #ffffff; display: flex; align-items: center; gap: 0.65rem;">
+                    <span style="background: ${rankColor}; color: #0f172a; width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 900;">${idx + 1}</span>
+                    <span style="font-size: 0.95rem; color: #ffffff;">${escapeHtmlStr(item.name)}</span>
+                    <span class="position-pill" style="font-size: 0.72rem; color: #38bdf8; border-color: rgba(56,189,248,0.3); background: rgba(56,189,248,0.1);">${escapeHtmlStr(item.role)}</span>
+                  </div>
+                  <div style="display: flex; align-items: baseline; gap: 0.5rem;">
+                    <span style="font-weight: 900; color: #38bdf8; font-size: 1.05rem;">
+                      ${item.totalLogs} <span style="font-size: 0.78rem; font-weight: 700; color: #94a3b8;">件</span>
+                    </span>
+                    <span style="font-size: 0.78rem; font-weight: 800; color: #34d399; background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); padding: 1px 7px; border-radius: 12px;">
+                      ${pct}%
+                    </span>
+                  </div>
+                </div>
+                <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; margin-top: 0.15rem;">
+                  <div style="width: ${barPct}%; height: 100%; background: linear-gradient(90deg, ${rankColor}, #3b82f6); border-radius: 4px; transition: width 0.4s ease;"></div>
+                </div>
+                ${top3Html}
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
       // 3. Feature 2: Treatment Primary Injured Part Frequency Ranking (Excluding Conditioning)
       const partsContainer = document.getElementById('dashTreatmentPartsList');
       if (partsContainer) {
@@ -5541,6 +5731,151 @@ function checkAndSendApprovalNotifications(ss) {
             `;
           }).join('');
         }
+      }
+
+      // 4. Feature 3-A: Condition Status Breakdown (Fit / Limit / Out)
+      const statusContainer = document.getElementById('dashStatusBreakdownList');
+      if (statusContainer) {
+        const statusCounts = { Fit: 0, Limit: 0, Out: 0 };
+        treatments.forEach(t => {
+          const st = String(t.playerStatus || t.status || 'Fit').trim().toLowerCase();
+          if (st === 'out') statusCounts.Out++;
+          else if (st === 'limit' || st === 'limited') statusCounts.Limit++;
+          else statusCounts.Fit++;
+        });
+
+        const totalStatusLogs = statusCounts.Fit + statusCounts.Limit + statusCounts.Out;
+        const maxStatusCnt = Math.max(1, statusCounts.Fit, statusCounts.Limit, statusCounts.Out);
+
+        const statusConfigs = [
+          { key: 'Fit', label: 'Fit（出場可）', color: '#10b981', count: statusCounts.Fit },
+          { key: 'Limit', label: 'Limit（制限あり）', color: '#f59e0b', count: statusCounts.Limit },
+          { key: 'Out', label: 'Out（別メニュー/離脱）', color: '#ef4444', count: statusCounts.Out }
+        ];
+
+        statusContainer.innerHTML = statusConfigs.map(cfg => {
+          const pct = totalStatusLogs > 0 ? Math.round((cfg.count / totalStatusLogs) * 100) : 0;
+          const barPct = Math.max(0, Math.round((cfg.count / maxStatusCnt) * 100));
+          return `
+            <div style="display: flex; flex-direction: column; gap: 0.3rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.88rem;">
+                <span style="font-weight: 800; color: var(--text-primary); display: flex; align-items: center; gap: 0.4rem;">
+                  <span style="width: 10px; height: 10px; border-radius: 50%; background: ${cfg.color}; display: inline-block;"></span>
+                  ${cfg.label}
+                </span>
+                <span style="font-weight: 800; color: ${cfg.color}; font-size: 0.88rem;">
+                  ${cfg.count} 件 <span style="font-size: 0.76rem; color: var(--text-secondary); font-weight: 700;">(${pct}%)</span>
+                </span>
+              </div>
+              <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden;">
+                <div style="width: ${barPct}%; height: 100%; background: ${cfg.color}; border-radius: 4px; transition: width 0.4s ease;"></div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // 5. Feature 3-B: Position Category Breakdown (FW vs BK)
+      const catContainer = document.getElementById('dashCategoryBreakdownList');
+      if (catContainer) {
+        const catCounts = { FW: 0, BK: 0 };
+        const fwPositions = ['PR', 'HO', 'LO', 'FL', 'NO.8', 'NO8', 'No.8', '8'];
+
+        treatments.forEach(t => {
+          const pObj = players.find(p => (t.playerId && p.id === t.playerId) || (t.playerName && p.name === t.playerName)) || {};
+          let cat = (pObj.category || '').toUpperCase().trim();
+          if (!cat) {
+            const pos = (t.playerPosition || pObj.position || '').toUpperCase().trim();
+            cat = fwPositions.includes(pos) ? 'FW' : 'BK';
+          }
+          if (cat === 'FW') catCounts.FW++;
+          else catCounts.BK++;
+        });
+
+        const totalCatLogs = catCounts.FW + catCounts.BK;
+        const maxCatCnt = Math.max(1, catCounts.FW, catCounts.BK);
+
+        const catConfigs = [
+          { key: 'FW', label: 'FW（フォワード）', color: '#3b82f6', count: catCounts.FW },
+          { key: 'BK', label: 'BK（バックス）', color: '#8b5cf6', count: catCounts.BK }
+        ];
+
+        catContainer.innerHTML = catConfigs.map(cfg => {
+          const pct = totalCatLogs > 0 ? Math.round((cfg.count / totalCatLogs) * 100) : 0;
+          const barPct = Math.max(0, Math.round((cfg.count / maxCatCnt) * 100));
+          return `
+            <div style="display: flex; flex-direction: column; gap: 0.3rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.88rem;">
+                <span style="font-weight: 800; color: var(--text-primary); display: flex; align-items: center; gap: 0.4rem;">
+                  <span style="width: 10px; height: 10px; border-radius: 50%; background: ${cfg.color}; display: inline-block;"></span>
+                  ${cfg.label}
+                </span>
+                <span style="font-weight: 800; color: ${cfg.color}; font-size: 0.88rem;">
+                  ${cfg.count} 件 <span style="font-size: 0.76rem; color: var(--text-secondary); font-weight: 700;">(${pct}%)</span>
+                </span>
+              </div>
+              <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden;">
+                <div style="width: ${barPct}%; height: 100%; background: ${cfg.color}; border-radius: 4px; transition: width 0.4s ease;"></div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // 6. Feature 3-C: Age Bracket Breakdown (<=25, 26-30, 31-35, 36+)
+      const ageContainer = document.getElementById('dashAgeBreakdownList');
+      if (ageContainer) {
+        const ageCounts = { 'u25': 0, 'a26_30': 0, 'a31_35': 0, 'a36plus': 0 };
+
+        treatments.forEach(t => {
+          const pObj = players.find(p => (t.playerId && p.id === t.playerId) || (t.playerName && p.name === t.playerName)) || {};
+          const dob = pObj.dob || t.dob || '';
+          if (dob) {
+            const birth = new Date(dob);
+            if (!isNaN(birth.getTime())) {
+              const refDate = t.date ? new Date(t.date) : new Date();
+              let age = refDate.getFullYear() - birth.getFullYear();
+              const m = refDate.getMonth() - birth.getMonth();
+              if (m < 0 || (m === 0 && refDate.getDate() < birth.getDate())) age--;
+
+              if (age <= 25) ageCounts.u25++;
+              else if (age <= 30) ageCounts.a26_30++;
+              else if (age <= 35) ageCounts.a31_35++;
+              else ageCounts.a36plus++;
+            }
+          }
+        });
+
+        const totalAgeLogs = ageCounts.u25 + ageCounts.a26_30 + ageCounts.a31_35 + ageCounts.a36plus;
+        const maxAgeCnt = Math.max(1, ageCounts.u25, ageCounts.a26_30, ageCounts.a31_35, ageCounts.a36plus);
+
+        const ageConfigs = [
+          { label: '25歳以下 (≤25)', color: '#38bdf8', count: ageCounts.u25 },
+          { label: '26〜30歳', color: '#34d399', count: ageCounts.a26_30 },
+          { label: '31〜35歳', color: '#facc15', count: ageCounts.a31_35 },
+          { label: '36歳以上 (36+)', color: '#fb923c', count: ageCounts.a36plus }
+        ];
+
+        ageContainer.innerHTML = ageConfigs.map(cfg => {
+          const pct = totalAgeLogs > 0 ? Math.round((cfg.count / totalAgeLogs) * 100) : 0;
+          const barPct = Math.max(0, Math.round((cfg.count / maxAgeCnt) * 100));
+          return `
+            <div style="display: flex; flex-direction: column; gap: 0.3rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.88rem;">
+                <span style="font-weight: 800; color: var(--text-primary); display: flex; align-items: center; gap: 0.4rem;">
+                  <span style="width: 10px; height: 10px; border-radius: 50%; background: ${cfg.color}; display: inline-block;"></span>
+                  ${cfg.label}
+                </span>
+                <span style="font-weight: 800; color: ${cfg.color}; font-size: 0.88rem;">
+                  ${cfg.count} 件 <span style="font-size: 0.76rem; color: var(--text-secondary); font-weight: 700;">(${pct}%)</span>
+                </span>
+              </div>
+              <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden;">
+                <div style="width: ${barPct}%; height: 100%; background: ${cfg.color}; border-radius: 4px; transition: width 0.4s ease;"></div>
+              </div>
+            </div>
+          `;
+        }).join('');
       }
     }
 
