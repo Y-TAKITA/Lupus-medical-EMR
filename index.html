@@ -4063,6 +4063,7 @@ function checkAndSendApprovalNotifications(ss) {
       const addChips = Array.from(document.querySelectorAll('#additionalBodyPartsGrid .body-part-chip.selected'))
         .map(c => c.innerText.trim())
         .filter(part => part !== primaryInjuredPart);
+      const autoDetailStr = addChips.join(', ');
 
       const rawSoapO = (document.getElementById('formSoapO').value || "").trim();
       const imgInput = document.getElementById('formSoapOImageUrl');
